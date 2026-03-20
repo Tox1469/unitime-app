@@ -8,13 +8,14 @@ import {
   BookOpen, Laptop, Globe, Calculator, Code, Flame, Award, Coffee,
   Sun, X, Info, Server, Database, Users, Rocket, DollarSign, Shield,
   Layers, ArrowRight, GitBranch, Cpu, Cloud, Smartphone, GraduationCap,
-  Search, Menu, Lightbulb, Monitor
+  Search, Menu, Lightbulb, Monitor, MessageSquare, FileText, Upload,
+  Download, Paperclip, Send, AlertCircle
 } from "lucide-react";
 
 // ============ TYPES ============
 type Task = { id: number; text: string; done: boolean; priority: "alta" | "media" | "baixa"; date: string };
 type Note = { id: number; text: string; date: string };
-type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "pomodoro" | "notas" | "produtividade" | "boletim" | "sobre";
+type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "pomodoro" | "notas" | "produtividade" | "boletim" | "forum" | "sobre";
 
 // ============ DATA ============
 const SCHEDULE = [
@@ -77,6 +78,7 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
     { id: "notas", Icon: StickyNote, label: "Notas" },
     { id: "produtividade", Icon: TrendingUp, label: "Produtividade" },
     { id: "boletim", Icon: Award, label: "Boletim" },
+    { id: "forum", Icon: MessageSquare, label: "Fórum" },
     { id: "sobre", Icon: Info, label: "Sobre o Projeto" },
   ];
 
@@ -617,6 +619,366 @@ function ProdutividadeView() {
           ))}
         </div>
       </Card>
+    </div>
+  );
+}
+
+// ============ FORUM ============
+type ForumPost = {
+  id: number;
+  subject: string;
+  subjectColor: string;
+  SubjectIcon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>;
+  professor: string;
+  title: string;
+  description: string;
+  date: string;
+  deadline?: string;
+  type: "atividade" | "material" | "aviso";
+  attachments: { name: string; size: string }[];
+  submitted: boolean;
+  submittedFile?: string;
+};
+
+const INITIAL_FORUM_POSTS: ForumPost[] = [
+  {
+    id: 1,
+    subject: "Estrutura de Dados",
+    subjectColor: "var(--accent)",
+    SubjectIcon: Code,
+    professor: "Prof.º João (Goku)",
+    title: "Lista de Exercícios 3 — Árvores Binárias",
+    description: "Resolver os exercícios 1 a 15 sobre árvores binárias de busca. Entregar em PDF ou código fonte comentado. Pode ser feito em dupla.",
+    date: "18/03/2026",
+    deadline: "02/04/2026",
+    type: "atividade",
+    attachments: [{ name: "Lista3_ArvoresBinarias.pdf", size: "245 KB" }, { name: "exemplos_arvores.zip", size: "1.2 MB" }],
+    submitted: false,
+  },
+  {
+    id: 2,
+    subject: "Programação Front-End",
+    subjectColor: "var(--green)",
+    SubjectIcon: Monitor,
+    professor: "Prof.ª Emil E. Golombieski",
+    title: "Projeto Final — Landing Page Responsiva",
+    description: "Criar uma landing page completa utilizando HTML5, CSS3 e JavaScript. Deve ser responsiva e ter pelo menos 3 seções. Usar Flexbox ou Grid. Entregar o link do GitHub.",
+    date: "15/03/2026",
+    deadline: "25/04/2026",
+    type: "atividade",
+    attachments: [{ name: "Requisitos_ProjetoFinal.pdf", size: "180 KB" }],
+    submitted: false,
+  },
+  {
+    id: 3,
+    subject: "Análise e Projeto Orientado a Objetos",
+    subjectColor: "var(--amber)",
+    SubjectIcon: BookOpen,
+    professor: "Prof.ª Jessyca K. Franquitto",
+    title: "Slides — Padrões de Projeto (Design Patterns)",
+    description: "Material da aula sobre Padrões de Projeto: Singleton, Factory, Observer e Strategy. Estudar para a prova.",
+    date: "17/03/2026",
+    type: "material",
+    attachments: [{ name: "Aula07_DesignPatterns.pdf", size: "3.8 MB" }, { name: "Exemplos_Java.zip", size: "890 KB" }],
+    submitted: false,
+  },
+  {
+    id: 4,
+    subject: "Mentalidade Criativa e Empreendedora",
+    subjectColor: "var(--purple)",
+    SubjectIcon: Lightbulb,
+    professor: "Prof.º Danilo",
+    title: "Trabalho — Protótipo Tecnológico",
+    description: "Desenvolver um protótipo funcional de solução tecnológica para o ambiente universitário. Grupos de até 4 pessoas. Apresentação ao vivo na última aula.",
+    date: "10/03/2026",
+    deadline: "12/04/2026",
+    type: "atividade",
+    attachments: [{ name: "Prototipo.pdf", size: "320 KB" }],
+    submitted: true,
+    submittedFile: "UniTime_Prototipo_IgorLuis.pdf",
+  },
+  {
+    id: 5,
+    subject: "Estrutura de Dados",
+    subjectColor: "var(--accent)",
+    SubjectIcon: Code,
+    professor: "Prof.º João (Goku)",
+    title: "Material — Grafos e Algoritmos de Busca",
+    description: "Slides e código de exemplo sobre grafos, BFS e DFS. Revisem antes da próxima aula.",
+    date: "19/03/2026",
+    type: "material",
+    attachments: [{ name: "Aula09_Grafos.pdf", size: "2.1 MB" }, { name: "grafo_bfs_dfs.py", size: "4 KB" }],
+    submitted: false,
+  },
+  {
+    id: 6,
+    subject: "Programação Front-End",
+    subjectColor: "var(--green)",
+    SubjectIcon: Monitor,
+    professor: "Prof.ª Emil E. Golombieski",
+    title: "Aviso — Aula prática no laboratório",
+    description: "A aula de quinta (20/03) será no Lab 2 em vez da Sala 37. Tragam seus notebooks carregados. Vamos trabalhar com React na prática.",
+    date: "18/03/2026",
+    type: "aviso",
+    attachments: [],
+    submitted: false,
+  },
+  {
+    id: 7,
+    subject: "Análise e Projeto Orientado a Objetos",
+    subjectColor: "var(--amber)",
+    SubjectIcon: BookOpen,
+    professor: "Prof.ª Jessyca K. Franquitto",
+    title: "Trabalho — Diagrama de Classes UML",
+    description: "Modelar um sistema de sua escolha usando diagrama de classes UML. Mínimo 8 classes com herança, composição e interfaces. Entregar no formato .astah ou imagem PNG.",
+    date: "12/03/2026",
+    deadline: "08/04/2026",
+    type: "atividade",
+    attachments: [{ name: "Roteiro_DiagramaClasses.pdf", size: "150 KB" }],
+    submitted: true,
+    submittedFile: "DiagramaUML_UniTime.astah",
+  },
+];
+
+function ForumView() {
+  const [posts, setPosts] = useState<ForumPost[]>(INITIAL_FORUM_POSTS);
+  const [filter, setFilter] = useState<"todos" | "atividade" | "material" | "aviso">("todos");
+  const [subjectFilter, setSubjectFilter] = useState<string>("todas");
+  const [expandedPost, setExpandedPost] = useState<number | null>(null);
+  const [uploadingId, setUploadingId] = useState<number | null>(null);
+
+  const filtered = posts.filter((p) => {
+    if (filter !== "todos" && p.type !== filter) return false;
+    if (subjectFilter !== "todas" && p.subject !== subjectFilter) return false;
+    return true;
+  });
+
+  const subjects = Array.from(new Set(posts.map((p) => p.subject)));
+
+  const handleSubmit = (id: number) => {
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, submitted: true, submittedFile: "Trabalho_Igor_Luis.pdf" } : p
+      )
+    );
+    setUploadingId(null);
+  };
+
+  const typeConfig = {
+    atividade: { label: "Atividade", color: "var(--red)", Icon: FileText },
+    material: { label: "Material", color: "var(--accent)", Icon: Download },
+    aviso: { label: "Aviso", color: "var(--amber)", Icon: AlertCircle },
+  };
+
+  const pendingCount = posts.filter((p) => p.type === "atividade" && !p.submitted).length;
+  const submittedCount = posts.filter((p) => p.type === "atividade" && p.submitted).length;
+  const materialCount = posts.filter((p) => p.type === "material").length;
+
+  return (
+    <div className="animate-fade-up space-y-6">
+      <div className="flex items-center gap-2">
+        <MessageSquare size={20} style={{ color: "var(--accent)" }} />
+        <h1 className="text-2xl font-bold tracking-tight">Fórum Acadêmico</h1>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { Icon: AlertCircle, label: "Pendentes", value: String(pendingCount), color: "var(--red)", bg: "var(--red-soft)" },
+          { Icon: CheckSquare, label: "Enviados", value: String(submittedCount), color: "var(--green)", bg: "var(--green-soft)" },
+          { Icon: Download, label: "Materiais", value: String(materialCount), color: "var(--accent)", bg: "var(--accent-soft)" },
+        ].map((s) => (
+          <Card key={s.label}>
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: s.bg }}>
+                <s.Icon size={18} style={{ color: s.color }} />
+              </div>
+              <span className="text-2xl font-bold tracking-tight" style={{ color: s.color }}>{s.value}</span>
+            </div>
+            <div className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{s.label}</div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex gap-2 flex-wrap">
+          {[
+            { id: "todos" as const, label: "Todos" },
+            { id: "atividade" as const, label: "Atividades" },
+            { id: "material" as const, label: "Materiais" },
+            { id: "aviso" as const, label: "Avisos" },
+          ].map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className="px-4 py-2 rounded-xl text-xs font-medium transition-all"
+              style={{
+                background: filter === f.id ? "var(--accent)" : "var(--bg-card)",
+                color: filter === f.id ? "white" : "var(--text-secondary)",
+                border: `1px solid ${filter === f.id ? "transparent" : "var(--border)"}`,
+              }}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <select
+          value={subjectFilter}
+          onChange={(e) => setSubjectFilter(e.target.value)}
+          className="px-4 py-2 rounded-xl text-xs font-medium outline-none cursor-pointer"
+          style={{ background: "var(--bg-card)", color: "var(--text-secondary)", border: "1px solid var(--border)" }}
+        >
+          <option value="todas">Todas as disciplinas</option>
+          {subjects.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Posts */}
+      <div className="space-y-4">
+        {filtered.map((post) => {
+          const tc = typeConfig[post.type];
+          const isExpanded = expandedPost === post.id;
+          const isOverdue = post.deadline && new Date(post.deadline.split("/").reverse().join("-")) < new Date() && !post.submitted;
+
+          return (
+            <div
+              key={post.id}
+              className="rounded-2xl overflow-hidden transition-all"
+              style={{ background: "var(--bg-card)", border: `1px solid ${isExpanded ? post.subjectColor + "40" : "var(--border)"}` }}
+            >
+              {/* Header */}
+              <button
+                onClick={() => setExpandedPost(isExpanded ? null : post.id)}
+                className="w-full p-5 text-left"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${post.subjectColor}12` }}>
+                    <post.SubjectIcon size={18} style={{ color: post.subjectColor }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: post.subjectColor }}>{post.subject}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: `${tc.color}12`, color: tc.color }}>
+                        {tc.label}
+                      </span>
+                      {post.type === "atividade" && post.submitted && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--green-soft)", color: "var(--green)" }}>
+                          Enviado
+                        </span>
+                      )}
+                      {isOverdue && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--red-soft)", color: "var(--red)" }}>
+                          Atrasado
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>{post.title}</h3>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{post.professor}</span>
+                      <span className="text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{post.date}</span>
+                      {post.deadline && (
+                        <span className="text-[11px]" style={{ color: isOverdue ? "var(--red)" : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>
+                          Prazo: {post.deadline}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <ChevronRight
+                    size={16}
+                    className="flex-shrink-0 transition-transform"
+                    style={{ color: "var(--text-muted)", transform: isExpanded ? "rotate(90deg)" : "none" }}
+                  />
+                </div>
+              </button>
+
+              {/* Expanded content */}
+              {isExpanded && (
+                <div className="px-5 pb-5 space-y-4" style={{ borderTop: "1px solid var(--border)" }}>
+                  <p className="text-sm leading-relaxed pt-4" style={{ color: "var(--text-secondary)" }}>
+                    {post.description}
+                  </p>
+
+                  {/* Attachments */}
+                  {post.attachments.length > 0 && (
+                    <div>
+                      <div className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>Arquivos</div>
+                      <div className="space-y-2">
+                        {post.attachments.map((att) => (
+                          <div
+                            key={att.name}
+                            className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:scale-[1.01]"
+                            style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}
+                          >
+                            <Paperclip size={14} style={{ color: post.subjectColor }} />
+                            <span className="text-sm flex-1" style={{ color: "var(--text-primary)" }}>{att.name}</span>
+                            <span className="text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{att.size}</span>
+                            <Download size={14} style={{ color: "var(--accent)" }} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Submit area (only for atividade) */}
+                  {post.type === "atividade" && (
+                    <div className="p-4 rounded-xl" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+                      {post.submitted ? (
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--green-soft)" }}>
+                            <CheckSquare size={16} style={{ color: "var(--green)" }} />
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium" style={{ color: "var(--green)" }}>Trabalho enviado</div>
+                            <div className="text-[11px] flex items-center gap-1.5 mt-0.5" style={{ color: "var(--text-muted)" }}>
+                              <Paperclip size={10} />
+                              {post.submittedFile}
+                            </div>
+                          </div>
+                        </div>
+                      ) : uploadingId === post.id ? (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "var(--bg-card)", border: "1px dashed var(--accent)" }}>
+                            <FileText size={16} style={{ color: "var(--accent)" }} />
+                            <span className="text-sm flex-1" style={{ color: "var(--text-primary)" }}>Trabalho_Igor_Luis.pdf</span>
+                            <button onClick={() => setUploadingId(null)} className="p-1 rounded-lg hover:bg-red-500/10">
+                              <X size={14} style={{ color: "var(--red)" }} />
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => handleSubmit(post.id)}
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-medium transition-all hover:opacity-90"
+                            style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}
+                          >
+                            <Send size={14} /> Enviar Trabalho
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setUploadingId(post.id)}
+                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-[1.02]"
+                          style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px dashed rgba(99,102,241,0.3)" }}
+                        >
+                          <Upload size={14} /> Anexar e enviar trabalho
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {filtered.length === 0 && (
+          <div className="text-center py-16">
+            <MessageSquare size={32} className="mx-auto mb-3" style={{ color: "var(--text-muted)" }} />
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>Nenhuma postagem encontrada</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -1240,6 +1602,7 @@ export default function Dashboard() {
     notas: <NotasView />,
     produtividade: <ProdutividadeView />,
     boletim: <BoletimView />,
+    forum: <ForumView />,
     sobre: <SobreView />,
   };
 
