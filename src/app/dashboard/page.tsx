@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import {
   Clock, CheckSquare, Calendar, BarChart3, Timer, StickyNote, TrendingUp,
   LayoutDashboard, Plus, Trash2, Play, Pause, RotateCcw, ChevronRight,
   BookOpen, Laptop, Globe, Calculator, Code, Flame, Award, Coffee,
-  Sun, X
+  Sun, X, Info, Server, Database, Users, Rocket, DollarSign, Shield,
+  Layers, ArrowRight, GitBranch, Cpu, Cloud, Smartphone, GraduationCap,
+  Search, Menu
 } from "lucide-react";
 
 // ============ TYPES ============
 type Task = { id: number; text: string; done: boolean; priority: "alta" | "media" | "baixa"; date: string };
 type Note = { id: number; text: string; date: string };
-type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "pomodoro" | "notas" | "produtividade";
+type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "pomodoro" | "notas" | "produtividade" | "boletim" | "sobre";
 
 // ============ DATA ============
 const SCHEDULE = [
@@ -57,59 +59,87 @@ const PROD_DATA = [
   { label: "Dom", hours: 1.5 },
 ];
 
+const GRADES_DATA = [
+  { subject: "Estrutura de Dados", professor: "Prof. Marcelo Ribeiro", n1: 8.5, n2: 7.0, n3: "--" as string | number, color: "var(--accent)", Icon: Code },
+  { subject: "Banco de Dados", professor: "Prof. Ana Souza", n1: 9.0, n2: 8.5, n3: 7.5, color: "var(--green)", Icon: Laptop },
+  { subject: "Eng. de Software", professor: "Prof. Carlos Lima", n1: 6.0, n2: 5.5, n3: "--" as string | number, color: "var(--amber)", Icon: BookOpen },
+  { subject: "Redes", professor: "Prof. Ricardo Alves", n1: 3.0, n2: 3.5, n3: 4.0, color: "var(--red)", Icon: Globe },
+  { subject: "Matematica Discreta", professor: "Prof. Julia Fernandes", n1: 7.5, n2: 8.0, n3: "--" as string | number, color: "var(--purple)", Icon: Calculator },
+];
+
 // ============ SIDEBAR ============
-function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) => void; open: boolean; onClose: () => void }) {
   const items: { id: Tab; Icon: React.ComponentType<{ size?: number }>; label: string }[] = [
     { id: "dashboard", Icon: LayoutDashboard, label: "Dashboard" },
-    { id: "horarios", Icon: Calendar, label: "Horários" },
+    { id: "horarios", Icon: Calendar, label: "Horarios" },
     { id: "tarefas", Icon: CheckSquare, label: "Tarefas" },
-    { id: "calendario", Icon: Calendar, label: "Calendário" },
+    { id: "calendario", Icon: Calendar, label: "Calendario" },
     { id: "pomodoro", Icon: Timer, label: "Pomodoro" },
     { id: "notas", Icon: StickyNote, label: "Notas" },
     { id: "produtividade", Icon: TrendingUp, label: "Produtividade" },
+    { id: "boletim", Icon: Award, label: "Boletim" },
+    { id: "sobre", Icon: Info, label: "Sobre o Projeto" },
   ];
 
+  const handleTabClick = (id: Tab) => {
+    setTab(id);
+    onClose();
+  };
+
   return (
-    <aside className="w-[260px] flex-shrink-0 flex flex-col h-screen sticky top-0" style={{ background: "var(--bg-secondary)", borderRight: "1px solid var(--border)" }}>
-      <Link href="/" className="flex items-center gap-3 px-6 py-6" style={{ borderBottom: "1px solid var(--border)" }}>
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>
-          <Clock size={18} className="text-white" />
-        </div>
-        <span className="text-lg font-semibold tracking-tight">
-          Uni<span style={{ color: "var(--accent)" }}>Time</span>
-        </span>
-      </Link>
+    <>
+      {/* Mobile backdrop */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 md:hidden"
+          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+          onClick={onClose}
+        />
+      )}
+      <aside
+        className={`w-[260px] flex-shrink-0 flex flex-col h-screen z-50 transition-transform duration-300 fixed md:sticky top-0 ${open ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        style={{ background: "var(--bg-secondary)", borderRight: "1px solid var(--border)" }}
+      >
+        <Link href="/" className="flex items-center gap-3 px-6 py-6" style={{ borderBottom: "1px solid var(--border)" }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>
+            <Clock size={18} className="text-white" />
+          </div>
+          <span className="text-lg font-semibold tracking-tight">
+            Uni<span style={{ color: "var(--accent)" }}>Time</span>
+          </span>
+        </Link>
 
-      <nav className="flex-1 py-5 px-3 space-y-0.5">
-        <p className="text-[10px] font-medium tracking-widest uppercase px-4 mb-3" style={{ color: "var(--text-muted)" }}>Menu</p>
-        {items.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setTab(item.id)}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left group"
-            style={{
-              background: tab === item.id ? "var(--accent-soft)" : "transparent",
-              color: tab === item.id ? "var(--accent)" : "var(--text-secondary)",
-              border: tab === item.id ? "1px solid rgba(99,102,241,0.15)" : "1px solid transparent",
-            }}
-          >
-            <item.Icon size={18} />
-            {item.label}
-            {tab === item.id && <div className="ml-auto w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />}
-          </button>
-        ))}
-      </nav>
+        <nav className="flex-1 py-5 px-3 space-y-0.5 overflow-y-auto">
+          <p className="text-[10px] font-medium tracking-widest uppercase px-4 mb-3" style={{ color: "var(--text-muted)" }}>Menu</p>
+          {items.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleTabClick(item.id)}
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left group"
+              style={{
+                background: tab === item.id ? "var(--accent-soft)" : "transparent",
+                color: tab === item.id ? "var(--accent)" : "var(--text-secondary)",
+                border: tab === item.id ? "1px solid rgba(99,102,241,0.15)" : "1px solid transparent",
+              }}
+            >
+              <item.Icon size={18} />
+              {item.label}
+              {tab === item.id && <div className="ml-auto w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />}
+            </button>
+          ))}
+        </nav>
 
-      <div className="px-4 py-5" style={{ borderTop: "1px solid var(--border)" }}>
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white" style={{ background: "linear-gradient(135deg, var(--accent), #a78bfa)" }}>IS</div>
-          <div>
-            <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Igor S. Pallisser</div>
-            <div className="text-[11px]" style={{ color: "var(--text-muted)" }}>ADS · 3º Semestre</div>
+        <div className="px-4 py-5" style={{ borderTop: "1px solid var(--border)" }}>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white" style={{ background: "linear-gradient(135deg, var(--accent), #a78bfa)" }}>IS</div>
+            <div>
+              <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Igor S. Pallisser</div>
+              <div className="text-[11px]" style={{ color: "var(--text-muted)" }}>ADS · 3o Semestre</div>
+            </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }
 
@@ -142,7 +172,7 @@ function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { Icon: BookOpen, label: "Tarefas Pendentes", value: "4", color: "var(--amber)", bg: "var(--amber-soft)" },
           { Icon: CheckSquare, label: "Concluídas", value: "2", color: "var(--green)", bg: "var(--green-soft)" },
@@ -161,7 +191,7 @@ function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Today */}
         <Card>
           <div className="flex items-center justify-between mb-5">
@@ -251,7 +281,7 @@ function HorariosView() {
         <Calendar size={20} style={{ color: "var(--accent)" }} />
         <h1 className="text-2xl font-bold tracking-tight">Gerenciador de Horários</h1>
       </div>
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {SCHEDULE.map((day) => (
           <div key={day.day} className="rounded-2xl overflow-hidden" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
             <div className="px-4 py-3 text-center text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>{day.day}</div>
@@ -302,7 +332,7 @@ function TarefasView() {
         </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {[
           { label: "Todas", count: tasks.length, color: "var(--accent)", bg: "var(--accent-soft)" },
           { label: "Pendentes", count: tasks.filter((t) => !t.done).length, color: "var(--amber)", bg: "var(--amber-soft)" },
@@ -506,7 +536,7 @@ function NotasView() {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {notes.map((note, i) => (
           <div key={note.id} className="p-5 rounded-2xl group relative transition-all hover:scale-[1.01] animate-fade-up" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", animationDelay: `${i * 0.05}s` }}>
             <button onClick={() => deleteNote(note.id)} className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 p-1.5 rounded-lg transition-all hover:bg-red-500/10">
@@ -541,7 +571,7 @@ function ProdutividadeView() {
         <h1 className="text-2xl font-bold tracking-tight">Análise de Produtividade</h1>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
           { label: "Total Semanal", value: `${totalH.toFixed(1)}h`, Icon: Clock, color: "var(--accent)", bg: "var(--accent-soft)" },
           { label: "Média Diária", value: `${avgH.toFixed(1)}h`, Icon: BarChart3, color: "var(--green)", bg: "var(--green-soft)" },
@@ -592,9 +622,615 @@ function ProdutividadeView() {
   );
 }
 
+// ============ SOBRE O PROJETO ============
+function SobreView() {
+  return (
+    <div className="animate-fade-up space-y-8 max-w-4xl">
+      {/* Header */}
+      <div>
+        <div className="flex items-center gap-2 mb-2">
+          <Info size={20} style={{ color: "var(--accent)" }} />
+          <h1 className="text-2xl font-bold tracking-tight">Sobre o Projeto</h1>
+        </div>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          Documentacao tecnica e visao geral do sistema UniTime
+        </p>
+      </div>
+
+      {/* Estrutura Obrigatoria */}
+      <Card>
+        <div className="flex items-center gap-2 mb-6">
+          <Rocket size={18} style={{ color: "var(--accent)" }} />
+          <h2 className="text-lg font-bold">Estrutura do Projeto</h2>
+        </div>
+        <div className="space-y-5">
+          {[
+            { label: "Nome do Sistema", value: "UniTime — Gestao de Tempo Academico", color: "var(--accent)" },
+            { label: "Problema", value: "Estudantes universitarios enfrentam dificuldade para organizar horarios, prazos de trabalhos, provas e atividades extracurriculares. A falta de uma ferramenta centralizada causa atrasos, esquecimentos e queda na produtividade academica.", color: "var(--red)" },
+            { label: "Solucao", value: "Uma plataforma web integrada que reune gerenciamento de horarios, lista de tarefas com prioridades, calendario academico, timer Pomodoro, bloco de notas e analise de produtividade — tudo em um unico ambiente digital.", color: "var(--green)" },
+            { label: "Como Funciona", value: "O aluno acessa o sistema via navegador, cadastra suas disciplinas e horarios, adiciona tarefas com prazos e prioridades, utiliza o Pomodoro para sessoes de estudo focado, e acompanha sua evolucao pelo painel de produtividade com graficos semanais.", color: "var(--amber)" },
+            { label: "Tecnologias Usadas", value: "Next.js 16 (React 19) — Framework web full-stack | TypeScript — Tipagem segura | Tailwind CSS 4 — Estilizacao utility-first | Lucide React — Biblioteca de icones | Vercel — Hospedagem e deploy automatico", color: "var(--purple)" },
+            { label: "Publico-alvo", value: "Estudantes universitarios de todos os cursos, especialmente da area de Tecnologia da Informacao, que buscam melhorar sua organizacao e produtividade academica.", color: "var(--accent)" },
+            { label: "Diferencial", value: "Integracao de multiplas ferramentas de produtividade (horarios, tarefas, Pomodoro, notas, analytics) em um unico sistema, com interface moderna dark mode, experiencia fluida e foco total no contexto universitario brasileiro.", color: "var(--green)" },
+          ].map((item) => (
+            <div key={item.label} className="p-4 rounded-xl" style={{ background: "var(--bg-primary)", borderLeft: `3px solid ${item.color}` }}>
+              <div className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: item.color }}>{item.label}</div>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-primary)" }}>{item.value}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Arquitetura do Sistema */}
+      <Card>
+        <div className="flex items-center gap-2 mb-6">
+          <Server size={18} style={{ color: "var(--purple)" }} />
+          <h2 className="text-lg font-bold">Arquitetura do Sistema</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {[
+            { Icon: Layers, label: "Tipo", value: "Aplicacao Web (SPA)", color: "var(--accent)" },
+            { Icon: Cloud, label: "Arquitetura", value: "Cliente-Servidor com API REST", color: "var(--green)" },
+            { Icon: Globe, label: "Infraestrutura", value: "Deploy em nuvem (Vercel)", color: "var(--amber)" },
+          ].map((item) => (
+            <div key={item.label} className="p-4 rounded-xl text-center" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ background: `${item.color}12` }}>
+                <item.Icon size={18} style={{ color: item.color }} />
+              </div>
+              <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: item.color }}>{item.label}</div>
+              <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{item.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Fluxo de Dados */}
+        <div className="p-5 rounded-xl mb-6" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+          <h3 className="text-sm font-bold mb-4" style={{ color: "var(--text-primary)" }}>Fluxo de Dados (Diagrama de Processos)</h3>
+          <div className="flex items-center justify-center gap-3 flex-wrap flex-col md:flex-row">
+            {[
+              { label: "Usuario", sub: "Login / Cadastro", color: "var(--accent)", Icon: Users },
+              { label: "Interface", sub: "Dashboard / Telas", color: "var(--green)", Icon: Smartphone },
+              { label: "Processamento", sub: "Logica de Negocio", color: "var(--amber)", Icon: Cpu },
+              { label: "Banco de Dados", sub: "PostgreSQL", color: "var(--purple)", Icon: Database },
+              { label: "Resposta", sub: "Feedback Visual", color: "var(--red)", Icon: BarChart3 },
+            ].map((step, i) => (
+              <div key={step.label} className="flex items-center gap-3">
+                <div className="p-3 rounded-xl text-center min-w-[120px]" style={{ background: `${step.color}08`, border: `1px solid ${step.color}25` }}>
+                  <step.Icon size={20} className="mx-auto mb-2" style={{ color: step.color }} />
+                  <div className="text-xs font-bold" style={{ color: step.color }}>{step.label}</div>
+                  <div className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{step.sub}</div>
+                </div>
+                {i < 4 && <ArrowRight size={16} style={{ color: "var(--text-muted)" }} />}
+              </div>
+            ))}
+          </div>
+        </div>
+      </Card>
+
+      {/* Casos de Uso */}
+      <Card>
+        <div className="flex items-center gap-2 mb-6">
+          <Users size={18} style={{ color: "var(--green)" }} />
+          <h2 className="text-lg font-bold">Casos de Uso</h2>
+        </div>
+        <div className="space-y-4">
+          {[
+            {
+              actor: "Aluno",
+              cases: [
+                "Cadastra suas disciplinas e horarios no gerenciador",
+                "Adiciona tarefas com prazo e prioridade (alta, media, baixa)",
+                "Inicia sessao Pomodoro de 25 min para estudar com foco",
+                "Consulta calendario para ver provas e entregas do mes",
+                "Cria notas rapidas com lembretes e informacoes importantes",
+                "Visualiza graficos de produtividade semanal e por disciplina",
+              ],
+              color: "var(--accent)",
+              Icon: GraduationCap,
+            },
+            {
+              actor: "Sistema",
+              cases: [
+                "Sugere prioridade baseada na proximidade do prazo",
+                "Envia alerta visual quando uma tarefa esta proxima do vencimento",
+                "Calcula automaticamente horas estudadas e media diaria",
+                "Alterna automaticamente entre foco e pausa no Pomodoro",
+                "Exibe aulas do dia baseado no dia da semana atual",
+              ],
+              color: "var(--green)",
+              Icon: Cpu,
+            },
+            {
+              actor: "Professor",
+              cases: [
+                "Visualiza grade de horarios e turmas atribuidas",
+                "Acompanha entregas e prazos dos alunos",
+                "Recebe notificacoes de alteracoes no calendario academico",
+              ],
+              color: "var(--amber)",
+              Icon: BookOpen,
+            },
+          ].map((group) => (
+            <div key={group.actor} className="p-4 rounded-xl" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${group.color}12` }}>
+                  <group.Icon size={16} style={{ color: group.color }} />
+                </div>
+                <span className="text-sm font-bold" style={{ color: group.color }}>{group.actor}</span>
+              </div>
+              <div className="space-y-2 pl-10">
+                {group.cases.map((c, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <ChevronRight size={12} className="mt-0.5 flex-shrink-0" style={{ color: group.color }} />
+                    <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{c}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Modelagem de Dados (DER) */}
+      <Card>
+        <div className="flex items-center gap-2 mb-6">
+          <Database size={18} style={{ color: "var(--amber)" }} />
+          <h2 className="text-lg font-bold">Modelagem de Dados (DER)</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {[
+            {
+              entity: "Usuario",
+              fields: ["id (PK)", "nome", "email", "senha_hash", "ra_aluno", "tipo (aluno/professor/coordenador)", "curso", "semestre", "created_at"],
+              color: "var(--accent)",
+              Icon: Users,
+            },
+            {
+              entity: "Tarefa",
+              fields: ["id (PK)", "usuario_id (FK)", "texto", "prioridade (alta/media/baixa)", "concluida", "data_prazo", "created_at"],
+              color: "var(--green)",
+              Icon: CheckSquare,
+            },
+            {
+              entity: "Disciplina",
+              fields: ["id (PK)", "nome", "sala", "cor", "professor_id (FK)", "curso_id (FK)"],
+              color: "var(--amber)",
+              Icon: BookOpen,
+            },
+            {
+              entity: "Horario",
+              fields: ["id (PK)", "disciplina_id (FK)", "dia_semana", "hora_inicio", "hora_fim"],
+              color: "var(--purple)",
+              Icon: Clock,
+            },
+            {
+              entity: "Nota",
+              fields: ["id (PK)", "usuario_id (FK)", "texto", "created_at"],
+              color: "var(--red)",
+              Icon: StickyNote,
+            },
+            {
+              entity: "Evento",
+              fields: ["id (PK)", "titulo", "data", "tipo (prova/entrega/seminario)", "disciplina_id (FK)", "cor"],
+              color: "var(--accent)",
+              Icon: Calendar,
+            },
+          ].map((ent) => (
+            <div key={ent.entity} className="p-4 rounded-xl" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${ent.color}12` }}>
+                  <ent.Icon size={14} style={{ color: ent.color }} />
+                </div>
+                <span className="text-sm font-bold" style={{ color: ent.color }}>{ent.entity}</span>
+              </div>
+              <div className="space-y-1">
+                {ent.fields.map((f) => (
+                  <div key={f} className="text-xs px-2 py-1 rounded-lg" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-jetbrains)" }}>
+                    {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Relacionamentos */}
+        <div className="p-4 rounded-xl" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <GitBranch size={16} style={{ color: "var(--purple)" }} />
+            <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>Relacionamentos</span>
+          </div>
+          <div className="space-y-2">
+            {[
+              { rel: "Usuario 1:N Tarefa", desc: "Um usuario pode ter varias tarefas" },
+              { rel: "Usuario 1:N Nota", desc: "Um usuario pode ter varias notas" },
+              { rel: "Disciplina 1:N Horario", desc: "Uma disciplina pode ter varios horarios na semana" },
+              { rel: "Disciplina 1:N Evento", desc: "Uma disciplina pode ter varios eventos (provas, entregas)" },
+              { rel: "Usuario N:N Disciplina", desc: "Alunos podem cursar varias disciplinas, e cada disciplina tem varios alunos (tabela intermediaria: Matricula)" },
+              { rel: "Professor 1:N Disciplina", desc: "Um professor pode lecionar varias disciplinas" },
+            ].map((r) => (
+              <div key={r.rel} className="flex items-start gap-3 p-2 rounded-lg">
+                <code className="text-xs px-2 py-1 rounded-lg flex-shrink-0" style={{ background: "var(--accent-soft)", color: "var(--accent)", fontFamily: "var(--font-jetbrains)" }}>{r.rel}</code>
+                <span className="text-xs" style={{ color: "var(--text-secondary)" }}>{r.desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Card>
+
+      {/* Viabilidade Tecnica */}
+      <Card>
+        <div className="flex items-center gap-2 mb-6">
+          <Shield size={18} style={{ color: "var(--red)" }} />
+          <h2 className="text-lg font-bold">Viabilidade Tecnica</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            {
+              Icon: CheckSquare,
+              question: "Isso e possivel hoje?",
+              answer: "Sim. Todas as tecnologias utilizadas sao maduras, open-source e amplamente adotadas no mercado. O Next.js e um dos frameworks mais populares para aplicacoes web, e a Vercel oferece hospedagem gratuita para projetos academicos.",
+              color: "var(--green)",
+            },
+            {
+              Icon: Code,
+              question: "Qual tecnologia seria usada?",
+              answer: "Frontend: Next.js 16 + React 19 + TypeScript + Tailwind CSS 4. Backend: API Routes do Next.js + PostgreSQL (Neon). Hospedagem: Vercel (CDN global). Autenticacao: Clerk ou NextAuth.",
+              color: "var(--accent)",
+            },
+            {
+              Icon: DollarSign,
+              question: "Qual o custo aproximado?",
+              answer: "MVP (prototipo): R$ 0 — usando planos gratuitos da Vercel, Neon e Clerk. Producao completa: R$ 50-150/mes para servidor, banco de dados e dominio personalizado. Escala: R$ 300-800/mes para 10.000+ usuarios.",
+              color: "var(--amber)",
+            },
+            {
+              Icon: Clock,
+              question: "Tempo de desenvolvimento?",
+              answer: "Prototipo funcional (atual): 2-3 semanas. MVP com backend completo: 2-3 meses (1 dev). Versao completa com app mobile: 4-6 meses (equipe de 2-3 devs).",
+              color: "var(--purple)",
+            },
+          ].map((item) => (
+            <div key={item.question} className="p-4 rounded-xl" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${item.color}12` }}>
+                  <item.Icon size={14} style={{ color: item.color }} />
+                </div>
+                <span className="text-sm font-bold" style={{ color: item.color }}>{item.question}</span>
+              </div>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>{item.answer}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Visao de Produto */}
+      <Card>
+        <div className="flex items-center gap-2 mb-6">
+          <Rocket size={18} style={{ color: "var(--accent)" }} />
+          <h2 className="text-lg font-bold">Visao de Produto</h2>
+        </div>
+        <div className="space-y-4">
+          {[
+            {
+              Icon: Users,
+              question: "Quem usaria?",
+              answer: "Estudantes universitarios de todas as areas, com foco inicial em alunos de cursos de Tecnologia (ADS, CC, SI, Engenharias). Potencial para expansao para ensino medio, pos-graduacao e cursos tecnicos. Professores e coordenadores tambem se beneficiam com visao de turmas e prazos.",
+              color: "var(--accent)",
+            },
+            {
+              Icon: Rocket,
+              question: "Poderia virar startup?",
+              answer: "Sim. O mercado de EdTech no Brasil movimenta bilhoes por ano. O UniTime se posiciona como uma alternativa brasileira ao Notion/Todoist voltada para o contexto academico. Modelo de negocio: freemium — gratuito para funcoes basicas, plano Pro (R$ 9,90/mes) com IA, integracao com sistemas academicos e relatorios avancados.",
+              color: "var(--green)",
+            },
+            {
+              Icon: TrendingUp,
+              question: "Como escalar?",
+              answer: "Fase 1: UniCesumar (validacao interna). Fase 2: Outras universidades de Ponta Grossa. Fase 3: Expansao estadual/nacional via parcerias com IES. Fase 4: App mobile (React Native) + API aberta para integracao com sistemas de gestao academica (TOTVS, RM). Infraestrutura: Vercel + Neon escalam automaticamente com a demanda.",
+              color: "var(--amber)",
+            },
+          ].map((item) => (
+            <div key={item.question} className="p-5 rounded-xl" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${item.color}12` }}>
+                  <item.Icon size={18} style={{ color: item.color }} />
+                </div>
+                <span className="font-bold" style={{ color: item.color }}>{item.question}</span>
+              </div>
+              <p className="text-sm leading-relaxed pl-11" style={{ color: "var(--text-secondary)" }}>{item.answer}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Creditos */}
+      <div className="text-center py-6" style={{ borderTop: "1px solid var(--border)" }}>
+        <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+          UniTime -- Mentalidade Criativa e Empreendedora
+        </p>
+        <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+          Igor Schiniegoski Pallisser & Luis Boratto · UniCesumar · ADS · 2026
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ============ BOLETIM VIEW ============
+function BoletimView() {
+  const getMedia = (n1: string | number, n2: string | number, n3: string | number) => {
+    const grades = [n1, n2, n3].filter((g) => typeof g === "number") as number[];
+    if (grades.length === 0) return null;
+    return grades.reduce((a, b) => a + b, 0) / grades.length;
+  };
+
+  const getStatus = (media: number | null, n3: string | number) => {
+    if (media === null) return { label: "Em andamento", color: "var(--amber)" };
+    if (typeof n3 === "string") return { label: "Em andamento", color: "var(--amber)" };
+    if (media >= 7) return { label: "Aprovado", color: "var(--green)" };
+    if (media < 4) return { label: "Reprovado", color: "var(--red)" };
+    return { label: "Em andamento", color: "var(--amber)" };
+  };
+
+  const allMedias = GRADES_DATA.map((g) => getMedia(g.n1, g.n2, g.n3)).filter((m) => m !== null) as number[];
+  const avgAll = allMedias.length > 0 ? allMedias.reduce((a, b) => a + b, 0) / allMedias.length : 0;
+  const approvedCount = GRADES_DATA.filter((g) => {
+    const m = getMedia(g.n1, g.n2, g.n3);
+    return m !== null && typeof g.n3 === "number" && m >= 7;
+  }).length;
+
+  return (
+    <div className="animate-fade-up space-y-6">
+      <div className="flex items-center gap-2">
+        <Award size={20} style={{ color: "var(--accent)" }} />
+        <h1 className="text-2xl font-bold tracking-tight">Boletim Academico</h1>
+      </div>
+
+      {/* Summary cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[
+          { label: "Total Disciplinas", value: String(GRADES_DATA.length), Icon: BookOpen, color: "var(--accent)", bg: "var(--accent-soft)" },
+          { label: "Aprovadas", value: String(approvedCount), Icon: CheckSquare, color: "var(--green)", bg: "var(--green-soft)" },
+          { label: "Media Geral", value: avgAll.toFixed(1), Icon: TrendingUp, color: "var(--purple)", bg: "var(--purple-soft, rgba(168,85,247,0.1))" },
+        ].map((s) => (
+          <Card key={s.label}>
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: s.bg }}>
+                <s.Icon size={18} style={{ color: s.color }} />
+              </div>
+              <span className="text-2xl font-bold tracking-tight" style={{ color: s.color }}>{s.value}</span>
+            </div>
+            <div className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{s.label}</div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Grades table */}
+      <Card>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr style={{ borderBottom: "1px solid var(--border)" }}>
+                {["Disciplina", "Professor", "N1", "N2", "N3", "Media", "Status"].map((h) => (
+                  <th key={h} className="text-left py-3 px-3 text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {GRADES_DATA.map((g) => {
+                const media = getMedia(g.n1, g.n2, g.n3);
+                const status = getStatus(media, g.n3);
+                return (
+                  <tr key={g.subject} style={{ borderBottom: "1px solid var(--border)" }}>
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${g.color}12` }}>
+                          <g.Icon size={14} style={{ color: g.color }} />
+                        </div>
+                        <span className="font-medium" style={{ color: "var(--text-primary)" }}>{g.subject}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-3" style={{ color: "var(--text-secondary)" }}>{g.professor}</td>
+                    <td className="py-3 px-3 font-medium" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains)" }}>{typeof g.n1 === "number" ? g.n1.toFixed(1) : g.n1}</td>
+                    <td className="py-3 px-3 font-medium" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains)" }}>{typeof g.n2 === "number" ? g.n2.toFixed(1) : g.n2}</td>
+                    <td className="py-3 px-3 font-medium" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains)" }}>{typeof g.n3 === "number" ? g.n3.toFixed(1) : g.n3}</td>
+                    <td className="py-3 px-3 font-bold" style={{ color: media !== null && media >= 7 ? "var(--green)" : media !== null && media < 4 ? "var(--red)" : "var(--amber)", fontFamily: "var(--font-jetbrains)" }}>
+                      {media !== null ? media.toFixed(1) : "--"}
+                    </td>
+                    <td className="py-3 px-3">
+                      <span className="text-xs font-medium px-2.5 py-1 rounded-lg" style={{ background: `${status.color}12`, color: status.color }}>
+                        {status.label}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+// ============ COMMAND PALETTE ============
+function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () => void; setTab: (t: Tab) => void }) {
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open && inputRef.current) {
+      inputRef.current.focus();
+    }
+    if (open) setQuery("");
+  }, [open]);
+
+  const tabs: { id: Tab; label: string; Icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; description: string }[] = [
+    { id: "dashboard", label: "Dashboard", Icon: LayoutDashboard, description: "Visao geral e resumo" },
+    { id: "horarios", label: "Horarios", Icon: Calendar, description: "Grade de aulas semanal" },
+    { id: "tarefas", label: "Tarefas", Icon: CheckSquare, description: "Lista de tarefas e pendencias" },
+    { id: "calendario", label: "Calendario", Icon: Calendar, description: "Eventos e datas importantes" },
+    { id: "pomodoro", label: "Pomodoro", Icon: Timer, description: "Timer de estudo focado" },
+    { id: "notas", label: "Notas", Icon: StickyNote, description: "Bloco de notas rapidas" },
+    { id: "produtividade", label: "Produtividade", Icon: TrendingUp, description: "Analise de horas e desempenho" },
+    { id: "boletim", label: "Boletim", Icon: Award, description: "Notas e medias por disciplina" },
+    { id: "sobre", label: "Sobre o Projeto", Icon: Info, description: "Documentacao e arquitetura" },
+  ];
+
+  const taskResults = INITIAL_TASKS.filter((t) =>
+    query.length > 0 && t.text.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const noteResults = INITIAL_NOTES.filter((n) =>
+    query.length > 0 && n.text.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const filteredTabs = tabs.filter((t) =>
+    query.length === 0 || t.label.toLowerCase().includes(query.toLowerCase()) || t.description.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const handleSelect = (id: Tab) => {
+    setTab(id);
+    onClose();
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }} onClick={onClose}>
+      <div
+        className="w-full max-w-lg rounded-2xl overflow-hidden animate-fade-up"
+        style={{ background: "var(--bg-card)", border: "1px solid var(--border)", boxShadow: "0 25px 50px rgba(0,0,0,0.4)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Search input */}
+        <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
+          <Search size={18} style={{ color: "var(--text-muted)" }} />
+          <input
+            ref={inputRef}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar paginas, tarefas, notas..."
+            className="flex-1 bg-transparent text-sm outline-none"
+            style={{ color: "var(--text-primary)" }}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") onClose();
+              if (e.key === "Enter" && filteredTabs.length > 0) handleSelect(filteredTabs[0].id);
+            }}
+          />
+          <kbd className="text-[10px] px-2 py-1 rounded-lg font-medium" style={{ background: "var(--bg-primary)", color: "var(--text-muted)", border: "1px solid var(--border)" }}>ESC</kbd>
+        </div>
+
+        {/* Results */}
+        <div className="max-h-[360px] overflow-y-auto p-2">
+          {filteredTabs.length > 0 && (
+            <div className="mb-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest px-3 py-2" style={{ color: "var(--text-muted)" }}>Paginas</p>
+              {filteredTabs.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => handleSelect(t.id)}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all hover:scale-[1.01]"
+                  style={{ color: "var(--text-primary)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-primary)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--accent-soft)" }}>
+                    <t.Icon size={16} style={{ color: "var(--accent)" }} />
+                  </div>
+                  <div>
+                    <div className="font-medium">{t.label}</div>
+                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>{t.description}</div>
+                  </div>
+                  <ChevronRight size={14} className="ml-auto" style={{ color: "var(--text-muted)" }} />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {taskResults.length > 0 && (
+            <div className="mb-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest px-3 py-2" style={{ color: "var(--text-muted)" }}>Tarefas</p>
+              {taskResults.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => handleSelect("tarefas")}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all"
+                  style={{ color: "var(--text-primary)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-primary)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--green-soft)" }}>
+                    <CheckSquare size={16} style={{ color: "var(--green)" }} />
+                  </div>
+                  <div>
+                    <div className="font-medium">{t.text}</div>
+                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Tarefa · {t.date}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {noteResults.length > 0 && (
+            <div className="mb-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest px-3 py-2" style={{ color: "var(--text-muted)" }}>Notas</p>
+              {noteResults.map((n) => (
+                <button
+                  key={n.id}
+                  onClick={() => handleSelect("notas")}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all"
+                  style={{ color: "var(--text-primary)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-primary)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--amber-soft)" }}>
+                    <StickyNote size={16} style={{ color: "var(--amber)" }} />
+                  </div>
+                  <div>
+                    <div className="font-medium">{n.text}</div>
+                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Nota · {n.date}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {query.length > 0 && filteredTabs.length === 0 && taskResults.length === 0 && noteResults.length === 0 && (
+            <div className="text-center py-8">
+              <Search size={32} className="mx-auto mb-3" style={{ color: "var(--text-muted)", opacity: 0.4 }} />
+              <p className="text-sm" style={{ color: "var(--text-muted)" }}>Nenhum resultado para &quot;{query}&quot;</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ============ MAIN ============
 export default function Dashboard() {
   const [tab, setTab] = useState<Tab>("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
+
+  // Ctrl+K shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setCmdOpen((prev) => !prev);
+      }
+      if (e.key === "Escape") {
+        setCmdOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const views: Record<Tab, React.ReactNode> = {
     dashboard: <DashboardView setTab={setTab} />,
@@ -604,12 +1240,38 @@ export default function Dashboard() {
     pomodoro: <PomodoroView />,
     notas: <NotasView />,
     produtividade: <ProdutividadeView />,
+    boletim: <BoletimView />,
+    sobre: <SobreView />,
   };
 
   return (
     <div className="flex min-h-screen noise-bg" style={{ background: "var(--bg-primary)", fontFamily: "var(--font-dm-sans)" }}>
-      <Sidebar tab={tab} setTab={setTab} />
-      <main className="flex-1 p-8 overflow-auto">{views[tab]}</main>
+      <Sidebar tab={tab} setTab={setTab} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <main className="flex-1 p-4 md:p-8 overflow-auto md:ml-0 w-full">
+        {/* Top bar with hamburger + search */}
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl transition-all"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
+          >
+            <Menu size={20} style={{ color: "var(--text-secondary)" }} />
+          </button>
+          <div className="ml-auto">
+            <button
+              onClick={() => setCmdOpen(true)}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all hover:scale-[1.02]"
+              style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+            >
+              <Search size={15} />
+              <span className="hidden sm:inline">Buscar...</span>
+              <kbd className="text-[10px] px-1.5 py-0.5 rounded-md font-medium hidden sm:inline" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>Ctrl+K</kbd>
+            </button>
+          </div>
+        </div>
+        {views[tab]}
+      </main>
+      <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} setTab={setTab} />
     </div>
   );
 }
