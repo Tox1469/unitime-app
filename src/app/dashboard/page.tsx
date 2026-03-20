@@ -8,7 +8,7 @@ import {
   BookOpen, Laptop, Globe, Calculator, Code, Flame, Award, Coffee,
   Sun, X, Info, Server, Database, Users, Rocket, DollarSign, Shield,
   Layers, ArrowRight, GitBranch, Cpu, Cloud, Smartphone, GraduationCap,
-  Search, Menu
+  Search, Menu, Lightbulb, Monitor
 } from "lucide-react";
 
 // ============ TYPES ============
@@ -18,35 +18,35 @@ type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "pomodoro" | "n
 
 // ============ DATA ============
 const SCHEDULE = [
-  { day: "Segunda", items: [{ time: "08:00", name: "Estrutura de Dados", room: "Sala 201", color: "var(--accent)", Icon: Code }, { time: "10:00", name: "Banco de Dados", room: "Lab 3", color: "var(--green)", Icon: Laptop }] },
-  { day: "Terça", items: [{ time: "08:00", name: "Eng. de Software", room: "Sala 105", color: "var(--amber)", Icon: BookOpen }, { time: "14:00", name: "Redes", room: "Lab 1", color: "var(--red)", Icon: Globe }] },
-  { day: "Quarta", items: [{ time: "08:00", name: "Estrutura de Dados", room: "Sala 201", color: "var(--accent)", Icon: Code }, { time: "10:00", name: "Matemática Discreta", room: "Sala 302", color: "var(--purple)", Icon: Calculator }] },
-  { day: "Quinta", items: [{ time: "08:00", name: "Eng. de Software", room: "Sala 105", color: "var(--amber)", Icon: BookOpen }, { time: "14:00", name: "Banco de Dados", room: "Lab 3", color: "var(--green)", Icon: Laptop }] },
-  { day: "Sexta", items: [{ time: "08:00", name: "Redes", room: "Lab 1", color: "var(--red)", Icon: Globe }, { time: "10:00", name: "Matemática Discreta", room: "Sala 302", color: "var(--purple)", Icon: Calculator }] },
+  { day: "Segunda", items: [] as { time: string; name: string; room: string; color: string; Icon: React.ComponentType<{ size?: number }> }[] },
+  { day: "Terça", items: [{ time: "19:00", name: "Análise e Projeto Orientado a Objetos", room: "Sala 37 · Térreo", color: "var(--amber)", Icon: BookOpen }, { time: "21:00", name: "Análise e Projeto Orientado a Objetos", room: "Sala 37 · Térreo", color: "var(--amber)", Icon: BookOpen }] },
+  { day: "Quarta", items: [{ time: "19:00", name: "Estrutura de Dados", room: "Sala 37 · Térreo", color: "var(--accent)", Icon: Code }, { time: "21:00", name: "Estrutura de Dados", room: "Sala 37 · Térreo", color: "var(--accent)", Icon: Code }] },
+  { day: "Quinta", items: [{ time: "19:00", name: "Programação Front-End", room: "Sala 37 · Térreo", color: "var(--green)", Icon: Monitor }, { time: "21:00", name: "Programação Front-End", room: "Sala 37 · Térreo", color: "var(--green)", Icon: Monitor }] },
+  { day: "Sexta", items: [{ time: "19:00", name: "Mentalidade Criativa e Empreendedora", room: "Sala 37 · Térreo", color: "var(--purple)", Icon: Lightbulb }, { time: "21:00", name: "Mentalidade Criativa e Empreendedora", room: "Sala 37 · Térreo", color: "var(--purple)", Icon: Lightbulb }] },
 ];
 
 const CALENDAR_EVENTS = [
   { day: 3, title: "Prova Estrutura de Dados", color: "var(--red)" },
-  { day: 7, title: "Entrega Trabalho BD", color: "var(--amber)" },
-  { day: 12, title: "Seminário Eng. Software", color: "var(--accent)" },
+  { day: 8, title: "Entrega Trabalho APOO", color: "var(--amber)" },
+  { day: 12, title: "Seminário Mentalidade Criativa", color: "var(--purple)" },
   { day: 15, title: "Semana Acadêmica", color: "var(--green)" },
-  { day: 20, title: "Prova Redes", color: "var(--red)" },
-  { day: 25, title: "Entrega TCC Parcial", color: "var(--purple)" },
+  { day: 18, title: "Prova Programação Front-End", color: "var(--red)" },
+  { day: 25, title: "Entrega Projeto Front-End", color: "var(--green)" },
 ];
 
 const INITIAL_TASKS: Task[] = [
   { id: 1, text: "Estudar para prova de Estrutura de Dados", done: false, priority: "alta", date: "03/04" },
-  { id: 2, text: "Finalizar relatório de Banco de Dados", done: false, priority: "alta", date: "07/04" },
-  { id: 3, text: "Preparar slides do seminário", done: true, priority: "media", date: "12/04" },
-  { id: 4, text: "Revisar matéria de Redes", done: false, priority: "media", date: "20/04" },
-  { id: 5, text: "Ler capítulo 5 de Matemática Discreta", done: true, priority: "baixa", date: "10/04" },
-  { id: 6, text: "Fazer exercícios de programação", done: false, priority: "baixa", date: "15/04" },
+  { id: 2, text: "Finalizar trabalho de APOO", done: false, priority: "alta", date: "08/04" },
+  { id: 3, text: "Preparar seminário de Mentalidade Criativa", done: true, priority: "media", date: "12/04" },
+  { id: 4, text: "Revisar matéria de Programação Front-End", done: false, priority: "media", date: "18/04" },
+  { id: 5, text: "Fazer exercícios de HTML/CSS/JS", done: true, priority: "baixa", date: "10/04" },
+  { id: 6, text: "Projeto final de Front-End", done: false, priority: "alta", date: "25/04" },
 ];
 
 const INITIAL_NOTES: Note[] = [
   { id: 1, text: "Lembrar de pegar o livro na biblioteca", date: "18/03" },
   { id: 2, text: "Grupo do seminário: Igor, Luís, Ana, Carlos", date: "15/03" },
-  { id: 3, text: "Professor de Redes mudou o horário da prova", date: "19/03" },
+  { id: 3, text: "Prof. João (Goku) vai passar lista extra de exercícios de ED", date: "19/03" },
 ];
 
 const PROD_DATA = [
@@ -60,11 +60,10 @@ const PROD_DATA = [
 ];
 
 const GRADES_DATA = [
-  { subject: "Estrutura de Dados", professor: "Prof. Marcelo Ribeiro", n1: 8.5, n2: 7.0, n3: "--" as string | number, color: "var(--accent)", Icon: Code },
-  { subject: "Banco de Dados", professor: "Prof. Ana Souza", n1: 9.0, n2: 8.5, n3: 7.5, color: "var(--green)", Icon: Laptop },
-  { subject: "Eng. de Software", professor: "Prof. Carlos Lima", n1: 6.0, n2: 5.5, n3: "--" as string | number, color: "var(--amber)", Icon: BookOpen },
-  { subject: "Redes", professor: "Prof. Ricardo Alves", n1: 3.0, n2: 3.5, n3: 4.0, color: "var(--red)", Icon: Globe },
-  { subject: "Matematica Discreta", professor: "Prof. Julia Fernandes", n1: 7.5, n2: 8.0, n3: "--" as string | number, color: "var(--purple)", Icon: Calculator },
+  { subject: "Análise e Projeto Orientado a Objetos", professor: "Prof.ª Jessyca K. Franquitto", n1: 8.0, n2: 7.5, n3: "--" as string | number, color: "var(--amber)", Icon: BookOpen },
+  { subject: "Estrutura de Dados", professor: "Prof.º João (Goku)", n1: 7.0, n2: 6.5, n3: "--" as string | number, color: "var(--accent)", Icon: Code },
+  { subject: "Programação Front-End", professor: "Prof.ª Emil E. Golombieski", n1: 9.0, n2: 8.5, n3: "--" as string | number, color: "var(--green)", Icon: Monitor },
+  { subject: "Mentalidade Criativa e Empreendedora", professor: "Prof.º Danilo", n1: 8.5, n2: 9.0, n3: "--" as string | number, color: "var(--purple)", Icon: Lightbulb },
 ];
 
 // ============ SIDEBAR ============
@@ -204,7 +203,7 @@ function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
             </button>
           </div>
           <div className="space-y-2.5">
-            {(SCHEDULE[Math.min(Math.max(today.getDay() - 1, 0), 4)]?.items || SCHEDULE[0].items).map((item, i) => (
+            {(SCHEDULE[Math.min(Math.max(today.getDay() - 1, 0), 4)]?.items?.length ? SCHEDULE[Math.min(Math.max(today.getDay() - 1, 0), 4)].items : SCHEDULE[1].items).map((item, i) => (
               <div key={i} className="flex items-center gap-3 p-3 rounded-xl transition-colors" style={{ background: "var(--bg-primary)" }}>
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${item.color}12` }}>
                   <item.Icon size={18} style={{ color: item.color }} />
@@ -558,10 +557,10 @@ function ProdutividadeView() {
 
   const subjects = [
     { name: "Estrutura de Dados", hours: 8.5, pct: 31, color: "var(--accent)", Icon: Code },
-    { name: "Banco de Dados", hours: 6.2, pct: 23, color: "var(--green)", Icon: Laptop },
-    { name: "Eng. de Software", hours: 5.8, pct: 21, color: "var(--amber)", Icon: BookOpen },
-    { name: "Redes", hours: 4.1, pct: 15, color: "var(--red)", Icon: Globe },
-    { name: "Matemática Discreta", hours: 2.7, pct: 10, color: "var(--purple)", Icon: Calculator },
+    { name: "Programação Front-End", hours: 7.2, pct: 26, color: "var(--green)", Icon: Monitor },
+    { name: "Análise e Projeto OO", hours: 6.0, pct: 22, color: "var(--amber)", Icon: BookOpen },
+    { name: "Mentalidade Criativa", hours: 3.5, pct: 13, color: "var(--purple)", Icon: Lightbulb },
+    { name: "Estudos Extras", hours: 2.1, pct: 8, color: "var(--red)", Icon: Flame },
   ];
 
   return (
