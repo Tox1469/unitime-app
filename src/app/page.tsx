@@ -3,180 +3,183 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  Clock, CheckSquare, Calendar, BarChart3, Timer, StickyNote,
-  ArrowRight, GraduationCap, User, Lock, ChevronRight,
-  MessageSquare, BookOpen, DollarSign, Award, Monitor,
-  Shield, Bell, Lightbulb, Search
+  Clock, User, Lock, ArrowRight, GraduationCap, Shield,
+  Bell, MessageSquare, Search, Eye, EyeOff, Volume2, Play
 } from "lucide-react";
 
 export default function LandingPage() {
   const [ra, setRa] = useState("");
   const [senha, setSenha] = useState("");
+  const [showSenha, setShowSenha] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#f5f7fa", fontFamily: "var(--font-dm-sans)" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "#fafafa", fontFamily: "var(--font-dm-sans)" }}>
 
-      {/* Top bar */}
-      <div className="w-full py-1.5 text-center text-[11px] font-medium tracking-wide" style={{ background: "#00a89d", color: "white" }}>
-        UniCesumar · Plataforma Acadêmica Reestruturada · UniTime 2026
-      </div>
-
-      {/* Header - Studeo style dark navy */}
-      <header className="relative z-10 flex items-center justify-between px-6 md:px-10 py-4" style={{ background: "#1B3A5C" }}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #00a89d, #00c4b8)" }}>
-            <Clock size={20} className="text-white" />
+      {/* Header - Replica do Studeo */}
+      <header style={{ background: "#1B3A5C" }}>
+        {/* Top nav */}
+        <div className="flex items-center justify-between px-4 md:px-8 py-3">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "#00a89d" }}>
+              <Clock size={18} className="text-white" />
+            </div>
+            <div className="leading-tight">
+              <div className="flex items-center gap-1">
+                <span className="text-lg font-bold text-white tracking-tight">UniCesumar</span>
+              </div>
+              <span className="text-[11px] font-medium tracking-wider" style={{ color: "#00c4b8" }}>studeo</span>
+            </div>
+            {/* Settings gear */}
+            <button className="ml-2 w-7 h-7 rounded-full flex items-center justify-center transition-colors hover:bg-white/10" style={{ color: "#7a9bc0" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
           </div>
-          <div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              Uni<span style={{ color: "#00c4b8" }}>Time</span>
-            </span>
-            <span className="text-[10px] block tracking-widest uppercase" style={{ color: "#7a9bc0" }}>studeo</span>
+
+          {/* Center nav */}
+          <nav className="hidden md:flex items-center gap-0.5">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all" style={{ background: "#e74c6f", color: "white" }}>
+              <MessageSquare size={14} />
+              Fale com mediador
+            </button>
+            <button className="relative flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10" style={{ color: "#c8d8e8" }}>
+              <Bell size={15} />
+              Notificações
+            </button>
+            <button className="relative flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10" style={{ color: "#c8d8e8" }}>
+              <Search size={15} />
+              <span className="relative">
+                Atividades
+                <span className="absolute -top-2 -right-4 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white" style={{ background: "#ef4444" }}>3</span>
+              </span>
+            </button>
+            <span className="mx-1 h-5 w-px" style={{ background: "rgba(255,255,255,0.15)" }} />
+            <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10" style={{ color: "#c8d8e8" }}>
+              <Eye size={15} />
+              Contraste
+            </button>
+            <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10" style={{ color: "#c8d8e8" }}>
+              <Volume2 size={15} />
+              Ouvir
+            </button>
+            <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10" style={{ color: "#c8d8e8" }}>
+              <Play size={15} />
+            </button>
+          </nav>
+
+          {/* User */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-white hidden sm:block">VISITANTE</span>
+            <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: "#00a89d" }}>
+              <User size={16} />
+            </div>
           </div>
         </div>
-
-        <nav className="hidden md:flex items-center gap-1">
-          {[
-            { Icon: Bell, label: "Notificações", badge: 3 },
-            { Icon: MessageSquare, label: "Fale com Mediador" },
-            { Icon: Search, label: "Buscar" },
-          ].map((item) => (
-            <button
-              key={item.label}
-              className="relative flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10"
-              style={{ color: "#c8d8e8" }}
-            >
-              <item.Icon size={16} />
-              <span className="hidden lg:inline">{item.label}</span>
-              {item.badge && (
-                <span className="absolute -top-0.5 left-6 lg:left-auto lg:relative w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white" style={{ background: "#ef4444" }}>
-                  {item.badge}
-                </span>
-              )}
-            </button>
-          ))}
-        </nav>
       </header>
 
       {/* Main content */}
       <main className="flex-1">
-
-        {/* Hero section - split layout */}
-        <section className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #1B3A5C 0%, #24506e 50%, #00a89d 100%)" }}>
-          <div className="max-w-7xl mx-auto px-6 md:px-10 py-12 md:py-20 flex flex-col md:flex-row items-center gap-10">
-
-            {/* Left - Text */}
+        {/* Hero banner - gradient like Studeo banners */}
+        <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #1B3A5C 0%, #24506e 40%, #00897b 100%)" }}>
+          <div className="max-w-6xl mx-auto px-4 md:px-8 py-10 md:py-16 flex flex-col md:flex-row items-center gap-8">
+            {/* Left text */}
             <div className="flex-1 text-center md:text-left">
-              <div className="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] font-medium tracking-wide uppercase mb-6" style={{ background: "rgba(255,255,255,0.1)", color: "#00c4b8", border: "1px solid rgba(0,196,184,0.2)" }}>
-                <GraduationCap size={13} />
-                Portal do Aluno Reestruturado
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase mb-4" style={{ background: "rgba(255,255,255,0.12)", color: "#00c4b8" }}>
+                <GraduationCap size={12} />
+                Reestruturação do Portal
               </div>
-
-              <h1 className="animate-fade-up text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight mb-6 text-white" style={{ animationDelay: "0.1s" }}>
-                Sua vida acadêmica
+              <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
+                Portal Acadêmico
                 <br />
-                <span className="italic" style={{ fontFamily: "var(--font-instrument)", color: "#00c4b8", fontWeight: 400 }}>
-                  em um só lugar
-                </span>
+                <span style={{ color: "#00c4b8" }}>UniTime</span>
               </h1>
-
-              <p className="animate-fade-up text-base md:text-lg leading-relaxed max-w-lg mb-8" style={{ color: "#b8cee0", animationDelay: "0.2s" }}>
-                Horários, notas, fórum, financeiro, biblioteca e muito mais.
-                Tudo integrado, moderno e fácil de usar — inclusive no celular.
+              <p className="text-sm md:text-base mb-6 max-w-md" style={{ color: "#b8cee0" }}>
+                Conhecimento que gera impacto na comunidade e na sua formação. Acesse suas disciplinas, notas, fórum e muito mais.
               </p>
-
-              <div className="animate-fade-up flex gap-3 justify-center md:justify-start flex-wrap" style={{ animationDelay: "0.3s" }}>
-                <div className="flex items-center gap-6">
-                  {[
-                    { value: "10+", label: "Recursos" },
-                    { value: "100%", label: "Gratuito" },
-                    { value: "Mobile", label: "Responsivo" },
-                  ].map((s) => (
-                    <div key={s.label} className="text-center">
-                      <div className="text-xl font-bold text-white">{s.value}</div>
-                      <div className="text-[10px] uppercase tracking-widest" style={{ color: "#7a9bc0" }}>{s.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:scale-[1.02]"
+                style={{ background: "#00a89d", border: "2px solid rgba(255,255,255,0.2)" }}
+              >
+                Acesse a plataforma
+                <ArrowRight size={14} />
+              </Link>
             </div>
 
-            {/* Right - Login Card */}
-            <div className="animate-fade-up w-full max-w-sm" style={{ animationDelay: "0.2s" }}>
-              <div className="p-7 rounded-2xl shadow-2xl" style={{ background: "white", border: "1px solid rgba(0,0,0,0.06)" }}>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #00a89d, #00c4b8)" }}>
-                    <Clock size={18} className="text-white" />
+            {/* Right - Login form */}
+            <div className="w-full max-w-sm">
+              <div className="p-6 rounded-2xl shadow-xl" style={{ background: "white" }}>
+                <div className="text-center mb-5">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ background: "linear-gradient(135deg, #00a89d, #00c4b8)" }}>
+                    <Clock size={22} className="text-white" />
                   </div>
-                  <div>
-                    <span className="text-base font-bold" style={{ color: "#1e293b" }}>Acesso ao Portal</span>
-                    <span className="text-[10px] block" style={{ color: "#94a3b8" }}>UniTime Studeo</span>
-                  </div>
+                  <h2 className="text-base font-bold" style={{ color: "#1e293b" }}>Acesso ao Portal</h2>
+                  <p className="text-[11px] mt-0.5" style={{ color: "#94a3b8" }}>Entre com seu RA e senha</p>
                 </div>
 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-[11px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: "#94a3b8" }}>RA do Aluno</label>
+                    <label className="text-[10px] font-semibold uppercase tracking-widest block mb-1" style={{ color: "#94a3b8" }}>RA do Aluno</label>
                     <div className="relative">
-                      <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#94a3b8" }} />
+                      <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#94a3b8" }} />
                       <input
                         type="text"
                         placeholder="Ex: 12345678"
                         value={ra}
                         onChange={(e) => setRa(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-2"
-                        style={{ background: "#f5f7fa", border: "1px solid #e2e8f0", color: "#1e293b", "--tw-ring-color": "#00a89d" } as React.CSSProperties}
+                        className="w-full pl-9 pr-4 py-2 rounded-lg text-sm outline-none transition-all focus:ring-2"
+                        style={{ background: "#f8fafc", border: "1px solid #e2e8f0", color: "#1e293b", "--tw-ring-color": "#00a89d" } as React.CSSProperties}
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="text-[11px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: "#94a3b8" }}>Senha</label>
+                    <label className="text-[10px] font-semibold uppercase tracking-widest block mb-1" style={{ color: "#94a3b8" }}>Senha</label>
                     <div className="relative">
-                      <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#94a3b8" }} />
+                      <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#94a3b8" }} />
                       <input
-                        type="password"
+                        type={showSenha ? "text" : "password"}
                         placeholder="••••••••"
                         value={senha}
                         onChange={(e) => setSenha(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-2"
-                        style={{ background: "#f5f7fa", border: "1px solid #e2e8f0", color: "#1e293b", "--tw-ring-color": "#00a89d" } as React.CSSProperties}
+                        className="w-full pl-9 pr-10 py-2 rounded-lg text-sm outline-none transition-all focus:ring-2"
+                        style={{ background: "#f8fafc", border: "1px solid #e2e8f0", color: "#1e293b", "--tw-ring-color": "#00a89d" } as React.CSSProperties}
                       />
+                      <button onClick={() => setShowSenha(!showSenha)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: "#94a3b8" }}>
+                        {showSenha ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
                     </div>
                   </div>
                   <Link
                     href="/dashboard"
-                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-white font-semibold text-sm transition-all hover:opacity-90 hover:scale-[1.01]"
-                    style={{ background: "linear-gradient(135deg, #00a89d, #00c4b8)" }}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-white font-semibold text-sm transition-all hover:opacity-90"
+                    style={{ background: "#00a89d" }}
                   >
                     Entrar
                     <ArrowRight size={14} />
                   </Link>
-                  <div className="text-center">
-                    <button className="text-[11px] font-medium transition-colors hover:underline" style={{ color: "#00a89d" }}>
+                  <div className="flex items-center justify-between">
+                    <button className="text-[11px] font-medium hover:underline" style={{ color: "#00a89d" }}>
                       Esqueci minha senha
+                    </button>
+                    <button className="text-[11px] font-medium hover:underline" style={{ color: "#94a3b8" }}>
+                      Primeiro acesso
                     </button>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 mt-4 mb-3">
                   <div className="flex-1 h-px" style={{ background: "#e2e8f0" }} />
-                  <span className="text-[10px] font-medium" style={{ color: "#94a3b8" }}>ou entre como</span>
+                  <span className="text-[10px]" style={{ color: "#94a3b8" }}>ou entre como</span>
                   <div className="flex-1 h-px" style={{ background: "#e2e8f0" }} />
                 </div>
-
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { role: "Aluno", Icon: GraduationCap },
                     { role: "Professor", Icon: User },
                     { role: "Coordenador", Icon: Shield },
                   ].map((r) => (
-                    <Link
-                      key={r.role}
-                      href="/dashboard"
-                      className="flex flex-col items-center gap-1 py-2.5 rounded-xl text-[11px] font-medium transition-all hover:scale-[1.02]"
-                      style={{ background: "#f5f7fa", border: "1px solid #e2e8f0", color: "#475569" }}
-                    >
-                      <r.Icon size={15} />
+                    <Link key={r.role} href="/dashboard" className="flex flex-col items-center gap-1 py-2 rounded-lg text-[10px] font-medium transition-all hover:bg-[#f0f4f8]" style={{ border: "1px solid #e2e8f0", color: "#475569" }}>
+                      <r.Icon size={14} />
                       {r.role}
                     </Link>
                   ))}
@@ -185,203 +188,121 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Wave separator */}
+          {/* Wave */}
           <div className="absolute bottom-0 left-0 right-0">
-            <svg viewBox="0 0 1440 60" fill="none" className="w-full">
-              <path d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,20 1440,30 L1440,60 L0,60 Z" fill="#f5f7fa" />
+            <svg viewBox="0 0 1440 50" fill="none" className="w-full">
+              <path d="M0,25 C360,50 720,0 1080,25 C1260,37 1380,15 1440,25 L1440,50 L0,50 Z" fill="#fafafa" />
             </svg>
           </div>
-        </section>
+        </div>
 
-        {/* Disciplinas Matriculadas - like Studeo */}
-        <section className="max-w-7xl mx-auto px-6 md:px-10 py-12">
+        {/* Content area - replica do Studeo home logado */}
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-8">
           <div className="flex flex-col md:flex-row gap-6">
-            {/* Disciplines table */}
+            {/* Main column */}
             <div className="flex-1">
-              <div className="p-6 rounded-2xl" style={{ background: "white", border: "1px solid rgba(0,0,0,0.06)" }}>
-                <h2 className="text-sm font-bold uppercase tracking-wider mb-1" style={{ color: "#1e293b" }}>Disciplinas Matriculadas</h2>
-                <p className="text-xs mb-5" style={{ color: "#94a3b8" }}>Acesso às aulas, atividades, fórum e materiais</p>
-
-                <div className="overflow-hidden rounded-xl" style={{ border: "1px solid #e2e8f0" }}>
-                  <div className="grid grid-cols-3 text-[10px] font-bold uppercase tracking-widest px-4 py-2.5" style={{ background: "#f8fafc", color: "#94a3b8", borderBottom: "1px solid #e2e8f0" }}>
-                    <span>Disciplina</span>
-                    <span className="text-center">Início</span>
-                    <span className="text-right">Módulo</span>
-                  </div>
-                  {[
-                    { name: "Análise e Projeto Orientado a Objetos", color: "#f59e0b", tag: "CURRICULAR" },
-                    { name: "Mentalidade Criativa e Empreendedora", color: "#7c3aed", tag: "CURRICULAR" },
-                    { name: "Programação Front-End", color: "#10b981", tag: "CURRICULAR" },
-                    { name: "Estrutura de Dados", color: "#00a89d", tag: "CURRICULAR" },
-                  ].map((d) => (
-                    <Link
-                      href="/dashboard"
-                      key={d.name}
-                      className="grid grid-cols-3 items-center px-4 py-3 transition-all hover:bg-[#f8fafc] group"
-                      style={{ borderBottom: "1px solid #f1f5f9" }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-1 h-8 rounded-full" style={{ background: d.color }} />
-                        <div>
-                          <span className="text-sm font-medium block group-hover:underline" style={{ color: "#1e293b" }}>{d.name}</span>
-                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded text-white" style={{ background: d.color }}>{d.tag}</span>
-                        </div>
-                      </div>
-                      <span className="text-xs text-center" style={{ color: "#64748b" }}>2026 / 1</span>
-                      <div className="flex items-center justify-end gap-1">
-                        <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                      </div>
-                    </Link>
-                  ))}
+              {/* Disciplinas Matriculadas */}
+              <div className="rounded-xl overflow-hidden" style={{ background: "white", border: "1px solid #e8ecf0" }}>
+                <div className="px-5 pt-5 pb-3">
+                  <h2 className="text-sm font-bold uppercase tracking-wide" style={{ color: "#1e293b" }}>Disciplinas Matriculadas</h2>
+                  <p className="text-xs mt-0.5" style={{ color: "#94a3b8" }}>Acesso às aulas ao vivo, atividades, fórum, material complementar e outros.</p>
                 </div>
-                <Link href="/dashboard" className="flex items-center justify-center gap-1 mt-4 text-xs font-medium transition-colors hover:underline" style={{ color: "#00a89d" }}>
-                  Ir para lista de disciplinas <ChevronRight size={12} />
-                </Link>
+
+                {/* Table header */}
+                <div className="grid grid-cols-12 text-[10px] font-bold uppercase tracking-widest px-5 py-2" style={{ color: "#94a3b8", borderBottom: "1px solid #e8ecf0", borderTop: "1px solid #e8ecf0" }}>
+                  <span className="col-span-7">Disciplinas Atuais</span>
+                  <span className="col-span-3 text-center">Início</span>
+                  <span className="col-span-2 text-right">Módulo</span>
+                </div>
+
+                {/* Rows */}
+                {[
+                  { name: "ANÁLISE E PROJETO ORIENTAD...", full: "Análise e Projeto Orientado a Objetos", tag: "CURRICULAR", tagColor: "#e74c6f" },
+                  { name: "MENTALIDADE CRIATIVA E EMP...", full: "Mentalidade Criativa e Empreendedora", tag: "CURRICULAR", tagColor: "#e74c6f" },
+                  { name: "PROGRAMAÇÃO FRONT END", full: "Programação Front-End", tag: "CURRICULAR", tagColor: "#e74c6f" },
+                  { name: "ESTRUTURA DE DADOS", full: "Estrutura de Dados", tag: "CURRICULAR", tagColor: "#e74c6f" },
+                ].map((d, i) => (
+                  <Link
+                    href="/dashboard"
+                    key={i}
+                    className="grid grid-cols-12 items-center px-5 py-3 transition-all hover:bg-[#f8fafc] group"
+                    style={{ borderBottom: "1px solid #f1f5f9", background: i % 2 === 0 ? "#fefefe" : "white" }}
+                  >
+                    <div className="col-span-7">
+                      <span className="text-xs font-medium block group-hover:text-[#00a89d] transition-colors" style={{ color: "#1B3A5C" }}>{d.name}</span>
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block text-white" style={{ background: d.tagColor }}>{d.tag}</span>
+                    </div>
+                    <span className="col-span-3 text-xs text-center" style={{ color: "#64748b" }}>2026 / 1</span>
+                    <span className="col-span-2 text-xs text-right" style={{ color: "#64748b" }}></span>
+                  </Link>
+                ))}
+
+                <div className="px-5 py-3 text-center">
+                  <Link href="/dashboard" className="text-xs font-medium inline-flex items-center gap-1 hover:underline" style={{ color: "#00a89d" }}>
+                    Ir para lista de disciplinas... <ArrowRight size={11} />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Palestras / Nivelamento */}
+              <div className="rounded-xl overflow-hidden mt-6" style={{ background: "white", border: "1px solid #e8ecf0" }}>
+                <div className="px-5 pt-5 pb-3">
+                  <h2 className="text-sm font-bold uppercase tracking-wide" style={{ color: "#1e293b" }}>Palestras / Nivelamento / Outros Ambientes</h2>
+                  <p className="text-xs mt-0.5" style={{ color: "#94a3b8" }}>Ainda mais para os seus estudos.</p>
+                </div>
+                <div className="px-5 pb-1">
+                  <div className="grid grid-cols-12 text-[10px] font-bold uppercase tracking-widest py-2" style={{ color: "#94a3b8", borderBottom: "1px solid #e8ecf0" }}>
+                    <span className="col-span-9">Descrição</span>
+                    <span className="col-span-3 text-right">Geral</span>
+                  </div>
+                </div>
+                {[
+                  "PROJETO DE EXTENSÃO VETERANO 2026.1",
+                  "NIVELAMENTO: PROGRAMA UNIVERSITÁRIO EM INTELIGÊNCIA ARTIFICIAL APLICADA 2026.1",
+                ].map((item, i) => (
+                  <Link
+                    href="/dashboard"
+                    key={i}
+                    className="block px-5 py-3 text-xs font-medium transition-all hover:bg-[#f8fafc] hover:text-[#00a89d]"
+                    style={{ color: "#1B3A5C", borderBottom: "1px solid #f1f5f9" }}
+                  >
+                    {item}
+                  </Link>
+                ))}
               </div>
             </div>
 
-            {/* Right cards - like Studeo */}
-            <div className="w-full md:w-64 flex flex-col gap-4">
-              <Link href="/dashboard" className="p-5 rounded-2xl text-center transition-all hover:scale-[1.02] hover:shadow-lg" style={{ background: "linear-gradient(135deg, #00a89d, #00c4b8)" }}>
-                <GraduationCap size={28} className="mx-auto mb-2 text-white" />
-                <div className="text-white font-bold text-sm">Disciplinas</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.7)" }}>Matriculadas e histórico</div>
+            {/* Right sidebar cards - Replica do Studeo */}
+            <div className="w-full md:w-56 flex flex-col gap-4">
+              {/* Disciplinas card - Teal/pink like Studeo */}
+              <Link href="/dashboard" className="p-5 rounded-xl text-center transition-all hover:scale-[1.02] hover:shadow-md" style={{ background: "#00a89d" }}>
+                <GraduationCap size={30} className="mx-auto mb-2 text-white" />
+                <div className="text-white font-bold text-base">Disciplinas</div>
+                <div className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.7)" }}>Matriculadas, pendentes e hist...</div>
               </Link>
-              <Link href="/dashboard" className="p-5 rounded-2xl text-center transition-all hover:scale-[1.02] hover:shadow-lg" style={{ background: "#1B3A5C" }}>
-                <BookOpen size={28} className="mx-auto mb-2 text-white" />
-                <div className="text-white font-bold text-sm">Arquivos</div>
+
+              {/* Arquivos card - Dark blue like Studeo */}
+              <Link href="/dashboard" className="p-5 rounded-xl text-center transition-all hover:scale-[1.02] hover:shadow-md" style={{ background: "#1B3A5C" }}>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <div className="text-white font-bold text-base">Arquivos</div>
                 <div className="text-[11px] mt-0.5" style={{ color: "#7a9bc0" }}>Arquivos gerais do curso</div>
               </Link>
-              <Link href="/dashboard" className="p-5 rounded-2xl text-center transition-all hover:scale-[1.02] hover:shadow-lg" style={{ background: "linear-gradient(135deg, #f59e0b, #fbbf24)" }}>
-                <Lightbulb size={28} className="mx-auto mb-2 text-white" />
-                <div className="text-white font-bold text-sm">Eu Indico</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.7)" }}>Indique e ganhe descontos</div>
+
+              {/* Eu indico card - Yellow like Studeo */}
+              <Link href="/dashboard" className="p-5 rounded-xl text-center transition-all hover:scale-[1.02] hover:shadow-md" style={{ background: "#f5c518" }}>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                <div className="text-white font-bold text-base">Eu indico</div>
+                <div className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.8)" }}>Você ganha e seus amigos ta...</div>
               </Link>
             </div>
           </div>
-        </section>
-
-        {/* Features grid - what UniTime improves */}
-        <section className="py-16 px-6 md:px-10" style={{ background: "white" }}>
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <span className="text-[11px] font-bold tracking-widest uppercase mb-3 block" style={{ color: "#00a89d" }}>O que melhoramos</span>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ color: "#1e293b" }}>
-                Studeo <span className="italic" style={{ fontFamily: "var(--font-instrument)", fontWeight: 400 }}>repensado</span>
-              </h2>
-              <p className="text-sm mt-3 max-w-lg mx-auto" style={{ color: "#64748b" }}>
-                Todos os recursos do portal acadêmico, com interface moderna, busca inteligente e experiência mobile real.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { Icon: Calendar, title: "Horários", desc: "Grade semanal visual", color: "#00a89d" },
-                { Icon: CheckSquare, title: "Tarefas", desc: "Lista com prioridades", color: "#10b981" },
-                { Icon: MessageSquare, title: "Fórum", desc: "Atividades e materiais", color: "#f59e0b" },
-                { Icon: Award, title: "Boletim", desc: "Notas por disciplina", color: "#7c3aed" },
-                { Icon: Timer, title: "Pomodoro", desc: "Timer de foco 25min", color: "#ef4444" },
-                { Icon: DollarSign, title: "Financeiro", desc: "Boletos e pagamentos", color: "#1B3A5C" },
-                { Icon: BookOpen, title: "Biblioteca", desc: "Livros e artigos", color: "#0891b2" },
-                { Icon: Monitor, title: "Responsivo", desc: "Funciona no celular", color: "#00a89d" },
-              ].map((f) => (
-                <Link
-                  href="/dashboard"
-                  key={f.title}
-                  className="group p-5 rounded-2xl transition-all duration-300 hover:scale-[1.03] hover:shadow-lg card-hover"
-                  style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}
-                >
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-all group-hover:scale-110" style={{ background: `${f.color}12` }}>
-                    <f.Icon size={20} style={{ color: f.color }} />
-                  </div>
-                  <h3 className="text-sm font-semibold mb-0.5" style={{ color: "#1e293b" }}>{f.title}</h3>
-                  <p className="text-[11px]" style={{ color: "#64748b" }}>{f.desc}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Comparison - Studeo vs UniTime */}
-        <section className="max-w-5xl mx-auto px-6 md:px-10 py-16">
-          <div className="text-center mb-10">
-            <span className="text-[11px] font-bold tracking-widest uppercase mb-3 block" style={{ color: "#ef4444" }}>Comparativo</span>
-            <h2 className="text-3xl font-bold tracking-tight" style={{ color: "#1e293b" }}>
-              Studeo Atual <span className="mx-2" style={{ color: "#94a3b8" }}>vs</span> <span style={{ color: "#00a89d" }}>UniTime</span>
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Studeo problems */}
-            <div className="p-6 rounded-2xl" style={{ background: "white", border: "1px solid #fecaca" }}>
-              <div className="text-sm font-bold mb-4 flex items-center gap-2" style={{ color: "#ef4444" }}>
-                <div className="w-2 h-2 rounded-full" style={{ background: "#ef4444" }} />
-                Problemas do Studeo
-              </div>
-              <div className="space-y-3">
-                {[
-                  "Menu com 20+ itens escondidos em submenus",
-                  "Interface datada sem dark mode",
-                  "Mobile praticamente inutilizável",
-                  "Difícil achar informações rapidamente",
-                  "Sem busca inteligente",
-                  "Sem timer de estudo ou produtividade",
-                ].map((p) => (
-                  <div key={p} className="flex items-start gap-2">
-                    <span className="text-xs mt-0.5" style={{ color: "#ef4444" }}>✕</span>
-                    <span className="text-sm" style={{ color: "#64748b" }}>{p}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            {/* UniTime solutions */}
-            <div className="p-6 rounded-2xl" style={{ background: "white", border: "1px solid #a7f3d0" }}>
-              <div className="text-sm font-bold mb-4 flex items-center gap-2" style={{ color: "#10b981" }}>
-                <div className="w-2 h-2 rounded-full" style={{ background: "#10b981" }} />
-                Solução UniTime
-              </div>
-              <div className="space-y-3">
-                {[
-                  "Navegação limpa com sidebar organizada",
-                  "Dark mode + Light mode com toggle",
-                  "100% responsivo, feito para celular",
-                  "Busca inteligente com Ctrl+K",
-                  "Tudo integrado: notas, fórum, financeiro",
-                  "Pomodoro e análise de produtividade",
-                ].map((p) => (
-                  <div key={p} className="flex items-start gap-2">
-                    <span className="text-xs mt-0.5" style={{ color: "#10b981" }}>✓</span>
-                    <span className="text-sm" style={{ color: "#1e293b" }}>{p}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="py-16 px-6 md:px-10 text-center" style={{ background: "#1B3A5C" }}>
-          <span className="text-[11px] font-bold tracking-widest uppercase mb-4 block" style={{ color: "#00c4b8" }}>Acesse agora</span>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-white">
-            Experimente o UniTime
-          </h2>
-          <p className="text-sm max-w-md mx-auto mb-8" style={{ color: "#7a9bc0" }}>
-            O portal acadêmico que você sempre quis. Moderno, rápido e funcional.
-          </p>
-          <Link
-            href="/dashboard"
-            className="group inline-flex items-center gap-2.5 px-10 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:scale-[1.03]"
-            style={{ background: "linear-gradient(135deg, #00a89d, #00c4b8)" }}
-          >
-            Acessar Dashboard
-            <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-          </Link>
-        </section>
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="px-6 md:px-10 py-6 text-center" style={{ background: "#0f2740" }}>
-        <p className="text-sm font-medium" style={{ color: "#7a9bc0" }}>UniTime © 2026 — Igor Schiniegoski Pallisser & Luís Boratto</p>
-        <p className="text-[11px] mt-1" style={{ color: "#4a6382" }}>Mentalidade Criativa e Empreendedora · UniCesumar Ponta Grossa · ADS</p>
+      <footer className="py-4 text-center" style={{ borderTop: "1px solid #e8ecf0" }}>
+        <p className="text-[11px]" style={{ color: "#94a3b8" }}>© 2026 UNICESUMAR. Todos os direitos reservados.</p>
+        <p className="text-[10px] mt-0.5" style={{ color: "#c1c9d4" }}>UniTime — Igor Schiniegoski Pallisser & Luís Boratto · Mentalidade Criativa e Empreendedora · ADS</p>
       </footer>
     </div>
   );
