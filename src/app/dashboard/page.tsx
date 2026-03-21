@@ -9,13 +9,14 @@ import {
   Sun, X, Info, Server, Database, Users, Rocket, DollarSign, Shield,
   Layers, ArrowRight, GitBranch, Cpu, Cloud, Smartphone, GraduationCap,
   Search, Menu, Lightbulb, Monitor, MessageSquare, FileText, Upload,
-  Download, Paperclip, Send, AlertCircle
+  Download, Paperclip, Send, AlertCircle, CreditCard, Briefcase,
+  ExternalLink, ChevronDown
 } from "lucide-react";
 
 // ============ TYPES ============
 type Task = { id: number; text: string; done: boolean; priority: "alta" | "media" | "baixa"; date: string };
 type Note = { id: number; text: string; date: string };
-type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "pomodoro" | "notas" | "produtividade" | "boletim" | "forum" | "sobre";
+type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "pomodoro" | "notas" | "produtividade" | "boletim" | "forum" | "financeiro" | "servicos" | "biblioteca" | "sobre";
 
 // ============ DATA ============
 const SCHEDULE = [
@@ -79,6 +80,9 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
     { id: "produtividade", Icon: TrendingUp, label: "Produtividade" },
     { id: "boletim", Icon: Award, label: "Boletim" },
     { id: "forum", Icon: MessageSquare, label: "Fórum" },
+    { id: "financeiro", Icon: DollarSign, label: "Financeiro" },
+    { id: "servicos", Icon: Briefcase, label: "Serviços" },
+    { id: "biblioteca", Icon: BookOpen, label: "Biblioteca" },
     { id: "sobre", Icon: Info, label: "Sobre o Projeto" },
   ];
 
@@ -102,7 +106,7 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
         style={{ background: "var(--bg-secondary)", borderRight: "1px solid var(--border)" }}
       >
         <Link href="/" className="flex items-center gap-3 px-6 py-6" style={{ borderBottom: "1px solid var(--border)" }}>
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
             <Clock size={18} className="text-white" />
           </div>
           <span className="text-lg font-semibold tracking-tight">
@@ -120,7 +124,7 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
               style={{
                 background: tab === item.id ? "var(--accent-soft)" : "transparent",
                 color: tab === item.id ? "var(--accent)" : "var(--text-secondary)",
-                border: tab === item.id ? "1px solid rgba(99,102,241,0.15)" : "1px solid transparent",
+                border: tab === item.id ? "1px solid rgba(0,168,157,0.15)" : "1px solid transparent",
               }}
             >
               <item.Icon size={18} />
@@ -264,7 +268,7 @@ function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
             return (
               <div key={d.label} className="flex-1 flex flex-col items-center gap-1.5">
                 <span className="text-[11px] font-medium" style={{ color: isHigh ? "var(--accent)" : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{d.hours}h</span>
-                <div className="w-full rounded-xl transition-all" style={{ height: `${(d.hours / 7) * 100}%`, background: isHigh ? "linear-gradient(to top, var(--accent), #818cf8)" : "var(--bg-elevated)" }} />
+                <div className="w-full rounded-xl transition-all" style={{ height: `${(d.hours / 7) * 100}%`, background: isHigh ? "linear-gradient(to top, var(--accent), #00c4b8)" : "var(--bg-elevated)" }} />
                 <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{d.label}</span>
               </div>
             );
@@ -285,7 +289,7 @@ function HorariosView() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {SCHEDULE.map((day) => (
           <div key={day.day} className="rounded-2xl overflow-hidden" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
-            <div className="px-4 py-3 text-center text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>{day.day}</div>
+            <div className="px-4 py-3 text-center text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>{day.day}</div>
             <div className="p-3 space-y-2.5">
               {day.items.map((item, i) => (
                 <div key={i} className="p-3 rounded-xl" style={{ background: "var(--bg-primary)", borderLeft: `3px solid ${item.color}` }}>
@@ -328,7 +332,7 @@ function TarefasView() {
       <div className="flex gap-3">
         <input value={newTask} onChange={(e) => setNewTask(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addTask()} placeholder="Adicionar nova tarefa..."
           className="flex-1 px-4 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-1" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-primary)", "--tw-ring-color": "var(--accent)" } as React.CSSProperties} />
-        <button onClick={addTask} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-medium transition-all hover:opacity-90" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>
+        <button onClick={addTask} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-medium transition-all hover:opacity-90" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
           <Plus size={16} /> Adicionar
         </button>
       </div>
@@ -378,7 +382,7 @@ function CalendarioView() {
       </div>
 
       <div className="rounded-2xl overflow-hidden" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
-        <div className="grid grid-cols-7 text-center text-xs font-semibold py-3 text-white" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>
+        <div className="grid grid-cols-7 text-center text-xs font-semibold py-3 text-white" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
           {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => <div key={d}>{d}</div>)}
         </div>
         <div className="grid grid-cols-7">
@@ -481,7 +485,7 @@ function PomodoroView() {
           </div>
 
           <div className="flex gap-3 justify-center mb-8">
-            <button onClick={() => setRunning(!running)} className="flex items-center gap-2 px-8 py-3 rounded-xl text-white font-semibold transition-all hover:scale-[1.02]" style={{ background: running ? "var(--red)" : "linear-gradient(135deg, var(--accent), #818cf8)" }}>
+            <button onClick={() => setRunning(!running)} className="flex items-center gap-2 px-8 py-3 rounded-xl text-white font-semibold transition-all hover:scale-[1.02]" style={{ background: running ? "var(--red)" : "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
               {running ? <><Pause size={18} /> Pausar</> : <><Play size={18} /> Iniciar</>}
             </button>
             <button onClick={() => reset(mode)} className="flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
@@ -532,7 +536,7 @@ function NotasView() {
       <div className="flex gap-3">
         <input value={newNote} onChange={(e) => setNewNote(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addNote()} placeholder="Escreva uma nota rápida..."
           className="flex-1 px-4 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-1" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-primary)", "--tw-ring-color": "var(--accent)" } as React.CSSProperties} />
-        <button onClick={addNote} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-medium" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>
+        <button onClick={addNote} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-medium" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
           <Plus size={16} /> Salvar
         </button>
       </div>
@@ -594,7 +598,7 @@ function ProdutividadeView() {
           {PROD_DATA.map((d) => (
             <div key={d.label} className="flex-1 flex flex-col items-center gap-2">
               <span className="text-sm font-bold" style={{ color: d.hours >= avgH ? "var(--accent)" : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{d.hours}h</span>
-              <div className="w-full rounded-xl transition-all" style={{ height: `${(d.hours / maxH) * 100}%`, background: d.hours >= avgH ? "linear-gradient(to top, var(--accent), #818cf8)" : "var(--bg-elevated)" }} />
+              <div className="w-full rounded-xl transition-all" style={{ height: `${(d.hours / maxH) * 100}%`, background: d.hours >= avgH ? "linear-gradient(to top, var(--accent), #00c4b8)" : "var(--bg-elevated)" }} />
               <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{d.label}</span>
             </div>
           ))}
@@ -950,7 +954,7 @@ function ForumView() {
                           <button
                             onClick={() => handleSubmit(post.id)}
                             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-medium transition-all hover:opacity-90"
-                            style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}
+                            style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}
                           >
                             <Send size={14} /> Enviar Trabalho
                           </button>
@@ -959,7 +963,7 @@ function ForumView() {
                         <button
                           onClick={() => setUploadingId(post.id)}
                           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-[1.02]"
-                          style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px dashed rgba(99,102,241,0.3)" }}
+                          style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px dashed rgba(0,168,157,0.3)" }}
                         >
                           <Upload size={14} /> Anexar e enviar trabalho
                         </button>
@@ -979,6 +983,332 @@ function ForumView() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// ============ FINANCEIRO ============
+function FinanceiroView() {
+  const [expandedBill, setExpandedBill] = useState<number | null>(null);
+
+  return (
+    <div className="animate-fade-up space-y-6">
+      <div className="flex items-center gap-2">
+        <DollarSign size={20} style={{ color: "var(--green)" }} />
+        <h1 className="text-2xl font-bold tracking-tight">Financeiro</h1>
+      </div>
+
+      {/* Summary cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <div className="flex items-start justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--green-soft)" }}>
+              <DollarSign size={18} style={{ color: "var(--green)" }} />
+            </div>
+          </div>
+          <div className="text-2xl font-bold tracking-tight" style={{ color: "var(--green)" }}>R$ 431,27</div>
+          <div className="text-xs font-medium mt-1" style={{ color: "var(--text-muted)" }}>Mensalidade Atual</div>
+        </Card>
+        <Card>
+          <div className="flex items-start justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--accent-soft)" }}>
+              <Calendar size={18} style={{ color: "var(--accent)" }} />
+            </div>
+          </div>
+          <div className="text-2xl font-bold tracking-tight" style={{ color: "var(--accent)" }}>08/04/2026</div>
+          <div className="text-xs font-medium mt-1" style={{ color: "var(--text-muted)" }}>Proximo Vencimento</div>
+        </Card>
+        <Card>
+          <div className="flex items-start justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--green-soft)" }}>
+              <CheckSquare size={18} style={{ color: "var(--green)" }} />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-bold tracking-tight" style={{ color: "var(--green)" }}>Em dia</span>
+            <span className="text-[11px] px-2.5 py-1 rounded-lg font-medium" style={{ background: "var(--green-soft)", color: "var(--green)" }}>OK</span>
+          </div>
+          <div className="text-xs font-medium mt-1" style={{ color: "var(--text-muted)" }}>Situacao</div>
+        </Card>
+      </div>
+
+      {/* Cobrancas em Aberto */}
+      <Card>
+        <div className="flex items-center gap-2 mb-5">
+          <FileText size={16} style={{ color: "var(--amber)" }} />
+          <h2 className="font-semibold text-sm">Cobrancas em Aberto</h2>
+        </div>
+        <div className="space-y-3">
+          {[
+            { id: 1042419307, desc: "Mensalidade Competencia 2026/4", valor: "R$ 431,27", venc: "08/04/2026", status: "Pendente", statusColor: "var(--amber)" },
+          ].map((bill) => (
+            <div key={bill.id} className="rounded-xl p-4" style={{ background: "var(--bg-primary)", borderLeft: `3px solid ${bill.statusColor}` }}>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[11px] font-medium px-2 py-0.5 rounded-lg" style={{ background: "var(--bg-card)", color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>#{bill.id}</span>
+                    <span className="text-[11px] px-2 py-0.5 rounded-lg font-medium" style={{ background: `${bill.statusColor}18`, color: bill.statusColor }}>{bill.status}</span>
+                  </div>
+                  <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{bill.desc}</div>
+                  <div className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>Vencimento: {bill.venc}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>{bill.valor}</div>
+                  <div className="flex items-center gap-2 mt-2">
+                    {["PIX", "Cartao", "Boleto"].map((method) => (
+                      <button
+                        key={method}
+                        className="text-[11px] px-3 py-1.5 rounded-lg font-medium transition-all hover:scale-[1.02]"
+                        style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px solid rgba(0,168,157,0.15)" }}
+                      >
+                        {method}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Historico de Pagamentos */}
+      <Card>
+        <div className="flex items-center gap-2 mb-5">
+          <CreditCard size={16} style={{ color: "var(--green)" }} />
+          <h2 className="font-semibold text-sm">Historico de Pagamentos</h2>
+        </div>
+        <div className="space-y-2.5">
+          {[
+            { comp: "2026/3", valor: "R$ 431,27", pago: "05/03/2026", status: "Pago", color: "var(--green)" },
+            { comp: "2026/2", valor: "R$ 431,27", pago: "07/02/2026", status: "Pago", color: "var(--green)" },
+            { comp: "2026/1", valor: "R$ 431,27", pago: "08/01/2026", status: "Pago", color: "var(--green)" },
+          ].map((p) => (
+            <div key={p.comp} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: p.color }} />
+                <div>
+                  <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Competencia {p.comp}</span>
+                  <div className="text-[11px]" style={{ color: "var(--text-muted)" }}>Pago em {p.pago}</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{p.valor}</div>
+                <span className="text-[11px] px-2 py-0.5 rounded-lg font-medium" style={{ background: `${p.color}18`, color: p.color }}>{p.status}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Acesso Rapido */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[
+          { label: "Negociacao de Dividas", desc: "Renegociar parcelas em atraso", Icon: DollarSign, color: "var(--amber)" },
+          { label: "2a Via de Boleto", desc: "Gerar segunda via do boleto", Icon: FileText, color: "var(--accent)" },
+        ].map((item) => (
+          <button key={item.label} className="text-left rounded-2xl p-5 transition-all hover:scale-[1.01]" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${item.color}18` }}>
+                <item.Icon size={18} style={{ color: item.color }} />
+              </div>
+              <div>
+                <div className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{item.label}</div>
+                <div className="text-xs" style={{ color: "var(--text-muted)" }}>{item.desc}</div>
+              </div>
+              <ChevronRight size={14} className="ml-auto" style={{ color: "var(--text-muted)" }} />
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============ SERVICOS ============
+function ServicosView() {
+  return (
+    <div className="animate-fade-up space-y-6">
+      <div className="flex items-center gap-2">
+        <Briefcase size={20} style={{ color: "var(--accent)" }} />
+        <h1 className="text-2xl font-bold tracking-tight">Servicos</h1>
+      </div>
+
+      {/* Quick access grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { title: "Carteirinha Online", desc: "Gerar carteirinha digital", Icon: CreditCard, color: "var(--accent)" },
+          { title: "Documentacao Academica", desc: "Historico, atestados e comprovantes", Icon: FileText, color: "var(--green)" },
+          { title: "Declaracoes", desc: "Declaracao de matricula e frequencia", Icon: FileText, color: "var(--amber)" },
+          { title: "Solicitacao de Servicos", desc: "Abrir chamado academico", Icon: Send, color: "var(--purple)" },
+          { title: "Atualizar Dados Cadastrais", desc: "Alterar endereco, telefone, email", Icon: Users, color: "var(--red)" },
+          { title: "Guia do Estudante", desc: "Manual do aluno UniCesumar", Icon: BookOpen, color: "var(--accent)" },
+        ].map((item) => (
+          <button
+            key={item.title}
+            className="text-left rounded-2xl p-5 transition-all hover:scale-[1.02] hover:shadow-lg"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
+          >
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ background: `${item.color}18` }}>
+              <item.Icon size={20} style={{ color: item.color }} />
+            </div>
+            <div className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>{item.title}</div>
+            <div className="text-xs" style={{ color: "var(--text-muted)" }}>{item.desc}</div>
+          </button>
+        ))}
+      </div>
+
+      {/* Solicitacoes Recentes */}
+      <Card>
+        <div className="flex items-center gap-2 mb-5">
+          <FileText size={16} style={{ color: "var(--accent)" }} />
+          <h2 className="font-semibold text-sm">Solicitacoes Recentes</h2>
+        </div>
+        <div className="space-y-2.5">
+          {[
+            { id: "2026-0847", desc: "Declaracao de Matricula", date: "15/03/2026", status: "Concluido", color: "var(--green)" },
+            { id: "2026-0823", desc: "Trancamento de Disciplina", date: "10/03/2026", status: "Em analise", color: "var(--amber)" },
+            { id: "2026-0801", desc: "2a Via Carteirinha", date: "02/03/2026", status: "Concluido", color: "var(--green)" },
+          ].map((s) => (
+            <div key={s.id} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: s.color }} />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-medium px-2 py-0.5 rounded-lg" style={{ background: "var(--bg-card)", color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>#{s.id}</span>
+                    <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{s.desc}</span>
+                  </div>
+                  <div className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{s.date}</div>
+                </div>
+              </div>
+              <span className="text-[11px] px-2.5 py-1 rounded-lg font-medium flex-shrink-0" style={{ background: `${s.color}18`, color: s.color }}>{s.status}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+// ============ BIBLIOTECA ============
+function BibliotecaView() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedSubject, setExpandedSubject] = useState<string | null>(null);
+
+  const materiaisPorDisciplina = [
+    { subject: "Estrutura de Dados", color: "var(--accent)", items: ["Algoritmos - Thomas Cormen (e-book)", "Estrutura de Dados em C - Celes (PDF)"] },
+    { subject: "APOO", color: "var(--amber)", items: ["Design Patterns - Gang of Four (e-book)", "UML Essencial - Martin Fowler (PDF)"] },
+    { subject: "Programacao Front-End", color: "var(--green)", items: ["JavaScript: The Good Parts (e-book)", "MDN Web Docs (link)"] },
+    { subject: "Mentalidade Criativa", color: "var(--purple)", items: ["Lean Startup - Eric Ries (e-book)", "Business Model Canvas (PDF)"] },
+  ];
+
+  return (
+    <div className="animate-fade-up space-y-6">
+      <div className="flex items-center gap-2">
+        <BookOpen size={20} style={{ color: "var(--accent)" }} />
+        <h1 className="text-2xl font-bold tracking-tight">Biblioteca</h1>
+      </div>
+
+      {/* Search bar */}
+      <div className="relative">
+        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }} />
+        <input
+          type="text"
+          placeholder="Pesquisar livros, artigos e materiais..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-11 pr-4 py-3 rounded-xl text-sm outline-none transition-all"
+          style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-primary)" }}
+        />
+      </div>
+
+      {/* Acesso Rapido */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { title: "Biblioteca Digital", desc: "Acervo de e-books e materiais digitais", Icon: BookOpen, color: "var(--accent)" },
+          { title: "Pesquisa de Artigos", desc: "Base de dados cientificos e academicos", Icon: Search, color: "var(--green)" },
+          { title: "IEEE Xplore", desc: "Periodicos de engenharia e tecnologia", Icon: Globe, color: "var(--amber)" },
+          { title: "Repositorio Institucional", desc: "Trabalhos academicos da UniCesumar", Icon: Database, color: "var(--purple)" },
+        ].map((item) => (
+          <button
+            key={item.title}
+            className="text-left rounded-2xl p-5 transition-all hover:scale-[1.02] hover:shadow-lg"
+            style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
+          >
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ background: `${item.color}18` }}>
+              <item.Icon size={20} style={{ color: item.color }} />
+            </div>
+            <div className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>{item.title}</div>
+            <div className="text-xs" style={{ color: "var(--text-muted)" }}>{item.desc}</div>
+          </button>
+        ))}
+      </div>
+
+      {/* Materiais por Disciplina */}
+      <Card>
+        <div className="flex items-center gap-2 mb-5">
+          <BookOpen size={16} style={{ color: "var(--accent)" }} />
+          <h2 className="font-semibold text-sm">Materiais por Disciplina</h2>
+        </div>
+        <div className="space-y-2">
+          {materiaisPorDisciplina.map((disc) => (
+            <div key={disc.subject} className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+              <button
+                className="w-full flex items-center justify-between p-3.5 text-left transition-all"
+                style={{ background: expandedSubject === disc.subject ? "var(--bg-primary)" : "transparent" }}
+                onClick={() => setExpandedSubject(expandedSubject === disc.subject ? null : disc.subject)}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: disc.color }} />
+                  <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{disc.subject}</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-lg" style={{ background: "var(--bg-card)", color: "var(--text-muted)" }}>{disc.items.length} materiais</span>
+                </div>
+                <ChevronDown
+                  size={14}
+                  style={{
+                    color: "var(--text-muted)",
+                    transform: expandedSubject === disc.subject ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 0.2s ease",
+                  }}
+                />
+              </button>
+              {expandedSubject === disc.subject && (
+                <div className="px-3.5 pb-3.5 space-y-2">
+                  {disc.items.map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg" style={{ background: "var(--bg-primary)" }}>
+                      <FileText size={14} style={{ color: disc.color }} />
+                      <span className="text-sm" style={{ color: "var(--text-primary)" }}>{item}</span>
+                      <ExternalLink size={12} className="ml-auto flex-shrink-0" style={{ color: "var(--text-muted)" }} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Emprestimos Ativos */}
+      <Card>
+        <div className="flex items-center gap-2 mb-5">
+          <BookOpen size={16} style={{ color: "var(--amber)" }} />
+          <h2 className="font-semibold text-sm">Emprestimos Ativos</h2>
+        </div>
+        <div className="space-y-2.5">
+          {[
+            { title: "Algoritmos e Estrutura de Dados", retirado: "10/03", devolucao: "24/03", status: "No prazo", color: "var(--green)" },
+            { title: "Clean Code - Robert C. Martin", retirado: "05/03", devolucao: "19/03", status: "Atrasado", color: "var(--red)" },
+          ].map((emp) => (
+            <div key={emp.title} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--bg-primary)", borderLeft: `3px solid ${emp.color}` }}>
+              <div>
+                <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{emp.title}</div>
+                <div className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>Retirado: {emp.retirado} · Devolucao: {emp.devolucao}</div>
+              </div>
+              <span className="text-[11px] px-2.5 py-1 rounded-lg font-medium flex-shrink-0" style={{ background: `${emp.color}18`, color: emp.color }}>{emp.status}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
@@ -1603,6 +1933,9 @@ export default function Dashboard() {
     produtividade: <ProdutividadeView />,
     boletim: <BoletimView />,
     forum: <ForumView />,
+    financeiro: <FinanceiroView />,
+    servicos: <ServicosView />,
+    biblioteca: <BibliotecaView />,
     sobre: <SobreView />,
   };
 

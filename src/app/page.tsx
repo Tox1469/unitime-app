@@ -15,14 +15,14 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col noise-bg gradient-mesh" style={{ fontFamily: "var(--font-dm-sans)" }}>
       {/* Ambient glow orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full animate-float" style={{ background: "radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)" }} />
+        <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full animate-float" style={{ background: "radial-gradient(circle, rgba(0,168,157,0.08) 0%, transparent 70%)" }} />
         <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full animate-float" style={{ background: "radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)", animationDelay: "3s" }} />
       </div>
 
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between px-8 py-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center animate-glow" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center animate-glow" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
             <Clock size={20} className="text-white" />
           </div>
           <span className="text-xl font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>
@@ -32,7 +32,7 @@ export default function LandingPage() {
         <button
           onClick={() => setShowLogin(true)}
           className="group flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-[1.02]"
-          style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px solid rgba(99,102,241,0.2)" }}
+          style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px solid rgba(0,168,157,0.2)" }}
         >
           Entrar
           <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
@@ -43,7 +43,7 @@ export default function LandingPage() {
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 text-center pt-8 pb-24">
         <div className="max-w-4xl">
           {/* Badge */}
-          <div className="animate-fade-up inline-flex items-center gap-2.5 px-4 py-2 rounded-full text-xs font-medium tracking-wide uppercase mb-10" style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px solid rgba(99,102,241,0.15)" }}>
+          <div className="animate-fade-up inline-flex items-center gap-2.5 px-4 py-2 rounded-full text-xs font-medium tracking-wide uppercase mb-10" style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px solid rgba(0,168,157,0.15)" }}>
             <GraduationCap size={14} />
             Feito para estudantes universitários
           </div>
@@ -67,7 +67,7 @@ export default function LandingPage() {
             <Link
               href="/dashboard"
               className="group flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:scale-[1.03] animate-glow"
-              style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}
+              style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}
             >
               Começar Agora
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
@@ -194,7 +194,7 @@ export default function LandingPage() {
         <Link
           href="/dashboard"
           className="group inline-flex items-center gap-2.5 px-10 py-4 rounded-xl text-white font-semibold text-lg transition-all duration-300 hover:scale-[1.03] animate-glow"
-          style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}
+          style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}
         >
           Começar com o UniTime
           <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
@@ -213,7 +213,7 @@ export default function LandingPage() {
           <div className="w-full max-w-sm p-8 rounded-2xl animate-fade-up" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
                   <Clock size={18} className="text-white" />
                 </div>
                 <span className="text-lg font-semibold">Uni<span style={{ color: "var(--accent)" }}>Time</span></span>
@@ -241,7 +241,7 @@ export default function LandingPage() {
                   <input type="password" placeholder="••••••••" className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-1" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)", color: "var(--text-primary)", "--tw-ring-color": "var(--accent)" } as React.CSSProperties} />
                 </div>
               </div>
-              <Link href="/dashboard" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-white font-semibold text-sm transition-all hover:opacity-90" style={{ background: "linear-gradient(135deg, var(--accent), #818cf8)" }}>
+              <Link href="/dashboard" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-white font-semibold text-sm transition-all hover:opacity-90" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
                 Entrar
                 <ArrowRight size={14} />
               </Link>

@@ -2,29 +2,29 @@
 
 
 :root {
-  --bg-primary: #06080d;
-  --bg-secondary: #0c1018;
-  --bg-card: #111827;
-  --bg-card-hover: #1a2234;
-  --bg-elevated: #1e293b;
-  --accent: #6366f1;
-  --accent-hover: #7c7ff7;
-  --accent-glow: rgba(99, 102, 241, 0.15);
-  --accent-soft: rgba(99, 102, 241, 0.08);
+  --bg-primary: #0a1628;
+  --bg-secondary: #0f1d32;
+  --bg-card: #142240;
+  --bg-card-hover: #1a2d52;
+  --bg-elevated: #1e3460;
+  --accent: #00a89d;
+  --accent-hover: #00c4b8;
+  --accent-glow: rgba(0, 168, 157, 0.15);
+  --accent-soft: rgba(0, 168, 157, 0.08);
   --green: #10b981;
   --green-soft: rgba(16, 185, 129, 0.12);
   --amber: #f59e0b;
   --amber-soft: rgba(245, 158, 11, 0.12);
   --red: #ef4444;
   --red-soft: rgba(239, 68, 68, 0.12);
-  --purple: #a78bfa;
-  --purple-soft: rgba(167, 139, 250, 0.12);
+  --purple: #8b5cf6;
+  --purple-soft: rgba(139, 92, 246, 0.12);
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
-  --text-muted: #475569;
-  --border: rgba(148, 163, 184, 0.08);
-  --border-hover: rgba(148, 163, 184, 0.15);
-  --glass: rgba(17, 24, 39, 0.7);
+  --text-muted: #4a6382;
+  --border: rgba(148, 163, 184, 0.10);
+  --border-hover: rgba(148, 163, 184, 0.18);
+  --glass: rgba(14, 29, 50, 0.7);
 }
 
 @theme inline {
@@ -43,7 +43,7 @@ body {
 
 * { scrollbar-width: thin; scrollbar-color: #1e293b transparent; }
 
-::selection { background: rgba(99, 102, 241, 0.3); color: white; }
+::selection { background: rgba(0, 168, 157, 0.3); color: white; }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(24px); }
@@ -61,8 +61,8 @@ body {
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 24px var(--accent-glow), 0 0 48px rgba(99, 102, 241, 0.06); }
-  50% { box-shadow: 0 0 32px var(--accent-glow), 0 0 64px rgba(99, 102, 241, 0.12); }
+  0%, 100% { box-shadow: 0 0 24px var(--accent-glow), 0 0 48px rgba(0, 168, 157, 0.06); }
+  50% { box-shadow: 0 0 32px var(--accent-glow), 0 0 64px rgba(0, 168, 157, 0.12); }
 }
 
 @keyframes shimmer {
@@ -114,13 +114,13 @@ body {
 
 .gradient-mesh {
   background:
-    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(99, 102, 241, 0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(16, 185, 129, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 50% 80%, rgba(167, 139, 250, 0.04) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(0, 168, 157, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(27, 58, 92, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 50% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 60%);
 }
 
 .shimmer-text {
-  background: linear-gradient(90deg, var(--text-primary) 0%, var(--accent) 50%, var(--text-primary) 100%);
+  background: linear-gradient(90deg, var(--text-primary) 0%, #00a89d 50%, var(--text-primary) 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
