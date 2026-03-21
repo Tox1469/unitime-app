@@ -17,7 +17,7 @@ import {
 // ============ TYPES ============
 type Task = { id: number; text: string; done: boolean; priority: "alta" | "media" | "baixa"; date: string };
 type Note = { id: number; text: string; date: string };
-type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "notas" | "boletim" | "forum" | "financeiro" | "servicos" | "biblioteca" | "sobre" | "perfil";
+type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "boletim" | "forum" | "financeiro" | "servicos" | "biblioteca" | "sobre" | "perfil";
 
 type Notification = {
   id: number;
@@ -93,7 +93,6 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
       items: [
         { id: "forum", Icon: MessageSquare, label: "Forum" },
         { id: "boletim", Icon: Award, label: "Boletim" },
-        { id: "notas", Icon: StickyNote, label: "Notas" },
       ],
     },
     {
@@ -1559,120 +1558,105 @@ function BoletimView() {
     <div className="animate-fade-up space-y-6">
       <div className="flex items-center gap-2">
         <Award size={20} style={{ color: "var(--accent)" }} />
-        <h1 className="text-2xl font-bold tracking-tight">Boletim Acadêmico</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Boletim</h1>
       </div>
 
-      {/* Info banner like Studeo */}
-      <div className="p-4 rounded-xl flex items-start gap-3" style={{ background: "var(--accent-soft)", borderLeft: "4px solid var(--accent)" }}>
-        <Info size={16} className="mt-0.5 flex-shrink-0" style={{ color: "var(--accent)" }} />
-        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-          Veja as notas das disciplinas atuais (disciplinas que está cursando). Clique em uma disciplina para ver os detalhes.
-        </p>
-      </div>
+      {/* Subject cards with media - click to expand */}
+      <div className="space-y-3">
+        {BOLETIM_DATA.map((d) => {
+          const numericGrades = Object.entries(d.grades).filter(([, v]) => typeof v === "number") as [string, number][];
+          const bimGrades = Object.entries(d.grades).filter(([k, v]) => k.startsWith("BIM") && typeof v === "number") as [string, number][];
+          const avg = bimGrades.length > 0 ? bimGrades.reduce((s, [, v]) => s + v, 0) / bimGrades.length : 0;
+          const isExpanded = expandedSubject === d.subject;
+          const mediaColor = avg >= 7 ? "var(--green)" : avg >= 4 ? "var(--amber)" : avg > 0 ? "var(--red)" : "var(--text-muted)";
 
-      {/* Grades table - Studeo style */}
-      <Card>
-        <div className="overflow-x-auto">
-          <table className="w-full text-[11px]">
-            <thead>
-              <tr style={{ borderBottom: "2px solid var(--border)" }}>
-                <th className="text-left py-3 px-3 text-[10px] font-bold uppercase tracking-widest sticky left-0" style={{ color: "var(--text-muted)", background: "var(--bg-card)", minWidth: "180px" }}>Nome</th>
-                {BOLETIM_COLS.map((h) => (
-                  <th key={h} className="text-center py-3 px-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)", minWidth: "45px" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {BOLETIM_DATA.map((d) => {
-                const isExpanded = expandedSubject === d.subject;
-                return (
-                  <tr
-                    key={d.subject}
-                    className="row-hover cursor-pointer"
-                    style={{ borderBottom: "1px solid var(--border)", background: isExpanded ? "var(--accent-soft)" : "transparent" }}
-                    onClick={() => setExpandedSubject(isExpanded ? null : d.subject)}
-                  >
-                    <td className="py-3 px-3 sticky left-0" style={{ background: isExpanded ? "var(--accent-soft)" : "var(--bg-card)" }}>
-                      <div className="flex items-center gap-2">
-                        <ChevronRight size={12} className="flex-shrink-0 transition-transform" style={{ color: "var(--text-muted)", transform: isExpanded ? "rotate(90deg)" : "none" }} />
-                        <span className="font-semibold" style={{ color: isExpanded ? "var(--accent)" : "var(--text-primary)" }}>{d.subject.toUpperCase()}</span>
-                      </div>
-                    </td>
-                    {BOLETIM_COLS.map((col) => {
-                      const val = d.grades[col];
+          return (
+            <div key={d.subject}>
+              {/* Main row - always visible */}
+              <button
+                onClick={() => setExpandedSubject(isExpanded ? null : d.subject)}
+                className="w-full p-4 rounded-2xl text-left card-hover flex items-center gap-4"
+                style={{ background: "var(--bg-card)", border: `1px solid ${isExpanded ? d.color + "40" : "var(--border)"}` }}
+              >
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${d.color}12` }}>
+                  <d.Icon size={20} style={{ color: d.color }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-bold truncate" style={{ color: "var(--text-primary)" }}>{d.subject}</h3>
+                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{d.professor}</p>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <div className="text-2xl font-bold" style={{ color: mediaColor, fontFamily: "var(--font-jetbrains)" }}>
+                    {avg > 0 ? avg.toFixed(1) : "--"}
+                  </div>
+                  <div className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>média</div>
+                </div>
+                <ChevronRight size={16} className="flex-shrink-0 transition-transform ml-2" style={{ color: "var(--text-muted)", transform: isExpanded ? "rotate(90deg)" : "none" }} />
+              </button>
+
+              {/* Expanded detail */}
+              {isExpanded && (
+                <div className="mt-2 p-5 rounded-2xl animate-fade-up" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+                  {/* Composition explanation */}
+                  <div className="text-xs font-medium mb-4" style={{ color: "var(--text-secondary)" }}>
+                    Composição da nota: Trabalho (5.0) + Prova (5.0) = 10.0 por bimestre
+                  </div>
+
+                  {/* BIM grades - the main ones students care about */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                    {["BIM1", "BIM2", "BIM3", "BIM4"].map((bim, i) => {
+                      const val = d.grades[bim];
                       const isNumber = typeof val === "number";
                       return (
-                        <td key={col} className="text-center py-3 px-1.5 font-medium" style={{ color: isNumber ? (val >= 7 ? "var(--green)" : val < 4 ? "var(--red)" : "var(--text-primary)") : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>
-                          {isNumber ? val.toFixed(1) : "-"}
-                        </td>
+                        <div key={bim} className="p-4 rounded-xl text-center" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+                          <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: d.color }}>{i + 1}º Bimestre</div>
+                          <div className="text-3xl font-bold" style={{ color: isNumber ? (val >= 7 ? "var(--green)" : val < 4 ? "var(--red)" : "var(--amber)") : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>
+                            {isNumber ? val.toFixed(1) : "-"}
+                          </div>
+                        </div>
                       );
                     })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-
-      {/* Expanded detail - shows when a subject is clicked */}
-      {expandedSubject && (() => {
-        const d = BOLETIM_DATA.find((b) => b.subject === expandedSubject);
-        if (!d) return null;
-        const numericGrades = Object.entries(d.grades).filter(([, v]) => typeof v === "number") as [string, number][];
-        const avg = numericGrades.length > 0 ? numericGrades.reduce((s, [, v]) => s + v, 0) / numericGrades.length : 0;
-
-        return (
-          <Card>
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${d.color}12` }}>
-                <d.Icon size={20} style={{ color: d.color }} />
-              </div>
-              <div>
-                <h2 className="text-base font-bold" style={{ color: "var(--text-primary)" }}>{d.subject}</h2>
-                <p className="text-xs" style={{ color: "var(--text-secondary)" }}>{d.professor}</p>
-              </div>
-            </div>
-
-            {/* Grade cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 mb-5">
-              {Object.entries(d.grades).map(([key, val]) => {
-                const isNumber = typeof val === "number";
-                return (
-                  <div key={key} className="p-3 rounded-xl text-center" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
-                    <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "var(--text-muted)" }}>{key}</div>
-                    <div className="text-lg font-bold" style={{ color: isNumber ? (val >= 7 ? "var(--green)" : val < 4 ? "var(--red)" : "var(--text-primary)") : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>
-                      {isNumber ? val.toFixed(1) : "-"}
-                    </div>
                   </div>
-                );
-              })}
-            </div>
 
-            {/* Summary */}
-            <div className="flex flex-wrap gap-4 p-4 rounded-xl" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Média Atual</div>
-                <div className="text-2xl font-bold" style={{ color: avg >= 7 ? "var(--green)" : avg < 4 ? "var(--red)" : "var(--amber)", fontFamily: "var(--font-jetbrains)" }}>
-                  {avg > 0 ? avg.toFixed(1) : "--"}
+                  {/* Detailed breakdown - smaller */}
+                  <details className="group">
+                    <summary className="text-xs font-medium cursor-pointer flex items-center gap-1 mb-3" style={{ color: "var(--accent)" }}>
+                      <ChevronRight size={12} className="transition-transform group-open:rotate-90" />
+                      Ver todas as notas detalhadas
+                    </summary>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-8 gap-2">
+                      {Object.entries(d.grades).filter(([k]) => !k.startsWith("BIM")).map(([key, val]) => {
+                        const isNumber = typeof val === "number";
+                        return (
+                          <div key={key} className="p-2 rounded-lg text-center" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+                            <div className="text-[9px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{key}</div>
+                            <div className="text-sm font-bold mt-0.5" style={{ color: isNumber ? "var(--text-primary)" : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>
+                              {isNumber ? val.toFixed(1) : "-"}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </details>
+
+                  {/* Summary bar */}
+                  <div className="flex items-center gap-6 mt-4 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Média Final</span>
+                      <span className="text-xl font-bold block" style={{ color: mediaColor, fontFamily: "var(--font-jetbrains)" }}>{avg > 0 ? avg.toFixed(1) : "--"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Notas</span>
+                      <span className="text-xl font-bold block" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains)" }}>{numericGrades.length}/{Object.keys(d.grades).length}</span>
+                    </div>
+                    <span className="text-xs font-semibold px-3 py-1 rounded-lg" style={{ background: "var(--amber-soft)", color: "var(--amber)" }}>Em andamento</span>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Notas Lançadas</div>
-                <div className="text-2xl font-bold" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains)" }}>
-                  {numericGrades.length}/{Object.keys(d.grades).length}
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Situação</div>
-                <span className="text-sm font-semibold px-3 py-1 rounded-lg inline-block mt-1" style={{ background: "var(--amber-soft)", color: "var(--amber)" }}>
-                  Em andamento
-                </span>
-              </div>
+              )}
             </div>
-          </Card>
-        );
-      })()}
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -1846,7 +1830,6 @@ function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () 
     { id: "horarios", label: "Horarios", Icon: Calendar, description: "Grade de aulas semanal" },
     { id: "tarefas", label: "Tarefas", Icon: CheckSquare, description: "Lista de tarefas e pendencias" },
     { id: "calendario", label: "Calendario", Icon: Calendar, description: "Eventos e datas importantes" },
-    { id: "notas", label: "Notas", Icon: StickyNote, description: "Bloco de notas rapidas" },
     { id: "boletim", label: "Boletim", Icon: Award, description: "Notas e medias por disciplina" },
     { id: "forum", label: "Forum", Icon: MessageSquare, description: "Forum academico e atividades" },
     { id: "financeiro", label: "Financeiro", Icon: DollarSign, description: "Mensalidades e pagamentos" },
@@ -1957,7 +1940,7 @@ function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () 
               {noteResults.map((n) => (
                 <button
                   key={n.id}
-                  onClick={() => handleSelect("notas")}
+                  onClick={() => handleSelect("dashboard")}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all"
                   style={{ color: "var(--text-primary)" }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-primary)")}
@@ -2056,7 +2039,6 @@ export default function Dashboard() {
     horarios: <HorariosView />,
     tarefas: <TarefasView />,
     calendario: <CalendarioView />,
-    notas: <NotasView />,
     boletim: <BoletimView />,
     forum: <ForumView />,
     financeiro: <FinanceiroView />,

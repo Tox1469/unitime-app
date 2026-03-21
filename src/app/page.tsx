@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  Clock, User, Lock, ArrowRight, GraduationCap, Shield,
-  Bell, MessageSquare, Search, Eye, EyeOff, Volume2, Play
+  Clock, User, Lock, ArrowRight, GraduationCap, Shield, Eye, EyeOff
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -29,49 +28,6 @@ export default function LandingPage() {
                 <span className="text-lg font-bold text-white tracking-tight">UniCesumar</span>
               </div>
               <span className="text-[11px] font-medium tracking-wider" style={{ color: "#00c4b8" }}>studeo</span>
-            </div>
-            {/* Settings gear */}
-            <button className="ml-2 w-7 h-7 rounded-full flex items-center justify-center transition-colors hover:bg-white/10" style={{ color: "#7a9bc0" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            </button>
-          </div>
-
-          {/* Center nav */}
-          <nav className="hidden md:flex items-center gap-0.5">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all" style={{ background: "#e74c6f", color: "white" }}>
-              <MessageSquare size={14} />
-              Fale com mediador
-            </button>
-            <button className="relative flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10" style={{ color: "#c8d8e8" }}>
-              <Bell size={15} />
-              Notificações
-            </button>
-            <button className="relative flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10" style={{ color: "#c8d8e8" }}>
-              <Search size={15} />
-              <span className="relative">
-                Atividades
-                <span className="absolute -top-2 -right-4 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white" style={{ background: "#ef4444" }}>3</span>
-              </span>
-            </button>
-            <span className="mx-1 h-5 w-px" style={{ background: "rgba(255,255,255,0.15)" }} />
-            <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10" style={{ color: "#c8d8e8" }}>
-              <Eye size={15} />
-              Contraste
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10" style={{ color: "#c8d8e8" }}>
-              <Volume2 size={15} />
-              Ouvir
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:bg-white/10" style={{ color: "#c8d8e8" }}>
-              <Play size={15} />
-            </button>
-          </nav>
-
-          {/* User */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-white hidden sm:block">VISITANTE</span>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: "#00a89d" }}>
-              <User size={16} />
             </div>
           </div>
         </div>
