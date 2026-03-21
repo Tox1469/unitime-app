@@ -8,7 +8,7 @@ import {
   BookOpen, Laptop, Globe, Calculator, Code, Award, Coffee,
   Sun, Moon, X, Info, Server, Database, Users, Rocket, DollarSign, Shield,
   Layers, ArrowRight, GitBranch, Cpu, Cloud, Smartphone, GraduationCap,
-  Search, Menu, Lightbulb, Monitor, MessageSquare, FileText, Upload,
+  Search, Menu, Lightbulb, Monitor, MessageSquare, FileText, Upload, LogOut,
   Download, Paperclip, Send, AlertCircle, CreditCard, Briefcase,
   ExternalLink, ChevronDown, Settings, User, Mail, Phone, MapPin,
   Bell, Ruler, ToggleLeft, ToggleRight
@@ -150,7 +150,7 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
                   <button
                     key={item.id}
                     onClick={() => handleTabClick(item.id)}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left group"
+                    className="sidebar-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-left group"
                     style={{
                       background: tab === item.id ? "rgba(0,168,157,0.15)" : "transparent",
                       color: tab === item.id ? "var(--accent)" : "var(--sidebar-muted)",
@@ -167,14 +167,22 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
           ))}
         </nav>
 
-        <div className="px-4 py-5" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-          <button onClick={() => { setTab("perfil"); onClose(); }} className="flex items-center gap-3 w-full text-left transition-all duration-200 rounded-xl px-1 py-1 hover:opacity-80">
+        <div className="px-4 py-4 space-y-3" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          <button onClick={() => { setTab("perfil"); onClose(); }} className="sidebar-item flex items-center gap-3 w-full text-left rounded-xl px-2 py-2">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white" style={{ background: "linear-gradient(135deg, var(--accent), #a78bfa)" }}>IS</div>
             <div>
               <div className="text-sm font-medium" style={{ color: "var(--sidebar-text)" }}>Igor S. Pallisser</div>
               <div className="text-[11px]" style={{ color: "var(--sidebar-muted)" }}>ADS · 3o Semestre</div>
             </div>
           </button>
+          <Link
+            href="/"
+            className="sidebar-item flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium"
+            style={{ color: "#ef6b6b" }}
+          >
+            <LogOut size={18} />
+            Sair
+          </Link>
         </div>
       </aside>
     </>
