@@ -6,17 +6,18 @@ import {
   Clock, CheckSquare, Calendar, BarChart3, Timer, StickyNote, TrendingUp,
   LayoutDashboard, Plus, Trash2, Play, Pause, RotateCcw, ChevronRight,
   BookOpen, Laptop, Globe, Calculator, Code, Flame, Award, Coffee,
-  Sun, X, Info, Server, Database, Users, Rocket, DollarSign, Shield,
+  Sun, Moon, X, Info, Server, Database, Users, Rocket, DollarSign, Shield,
   Layers, ArrowRight, GitBranch, Cpu, Cloud, Smartphone, GraduationCap,
   Search, Menu, Lightbulb, Monitor, MessageSquare, FileText, Upload,
   Download, Paperclip, Send, AlertCircle, CreditCard, Briefcase,
-  ExternalLink, ChevronDown
+  ExternalLink, ChevronDown, Settings, User, Mail, Phone, MapPin,
+  Bell, Ruler, ToggleLeft, ToggleRight
 } from "lucide-react";
 
 // ============ TYPES ============
 type Task = { id: number; text: string; done: boolean; priority: "alta" | "media" | "baixa"; date: string };
 type Note = { id: number; text: string; date: string };
-type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "pomodoro" | "notas" | "produtividade" | "boletim" | "forum" | "financeiro" | "servicos" | "biblioteca" | "sobre";
+type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "pomodoro" | "notas" | "produtividade" | "boletim" | "forum" | "financeiro" | "servicos" | "biblioteca" | "sobre" | "perfil";
 
 // ============ DATA ============
 const SCHEDULE = [
@@ -84,6 +85,7 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
     { id: "servicos", Icon: Briefcase, label: "Serviços" },
     { id: "biblioteca", Icon: BookOpen, label: "Biblioteca" },
     { id: "sobre", Icon: Info, label: "Sobre o Projeto" },
+    { id: "perfil", Icon: User, label: "Perfil" },
   ];
 
   const handleTabClick = (id: Tab) => {
@@ -103,28 +105,28 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
       )}
       <aside
         className={`w-[260px] flex-shrink-0 flex flex-col h-screen z-50 transition-transform duration-300 fixed md:sticky top-0 ${open ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
-        style={{ background: "var(--bg-secondary)", borderRight: "1px solid var(--border)" }}
+        style={{ background: "var(--sidebar-bg)", borderRight: "1px solid rgba(255,255,255,0.08)" }}
       >
-        <Link href="/" className="flex items-center gap-3 px-6 py-6" style={{ borderBottom: "1px solid var(--border)" }}>
+        <Link href="/" className="flex items-center gap-3 px-6 py-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
             <Clock size={18} className="text-white" />
           </div>
-          <span className="text-lg font-semibold tracking-tight">
+          <span className="text-lg font-semibold tracking-tight" style={{ color: "var(--sidebar-text)" }}>
             Uni<span style={{ color: "var(--accent)" }}>Time</span>
           </span>
         </Link>
 
         <nav className="flex-1 py-5 px-3 space-y-0.5 overflow-y-auto">
-          <p className="text-[10px] font-medium tracking-widest uppercase px-4 mb-3" style={{ color: "var(--text-muted)" }}>Menu</p>
+          <p className="text-[10px] font-medium tracking-widest uppercase px-4 mb-3" style={{ color: "var(--sidebar-muted)" }}>Menu</p>
           {items.map((item) => (
             <button
               key={item.id}
               onClick={() => handleTabClick(item.id)}
               className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left group"
               style={{
-                background: tab === item.id ? "var(--accent-soft)" : "transparent",
-                color: tab === item.id ? "var(--accent)" : "var(--text-secondary)",
-                border: tab === item.id ? "1px solid rgba(0,168,157,0.15)" : "1px solid transparent",
+                background: tab === item.id ? "rgba(0,168,157,0.15)" : "transparent",
+                color: tab === item.id ? "var(--accent)" : "var(--sidebar-muted)",
+                border: tab === item.id ? "1px solid rgba(0,168,157,0.25)" : "1px solid transparent",
               }}
             >
               <item.Icon size={18} />
@@ -134,14 +136,14 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
           ))}
         </nav>
 
-        <div className="px-4 py-5" style={{ borderTop: "1px solid var(--border)" }}>
-          <div className="flex items-center gap-3">
+        <div className="px-4 py-5" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          <button onClick={() => { setTab("perfil"); onClose(); }} className="flex items-center gap-3 w-full text-left transition-all duration-200 rounded-xl px-1 py-1 hover:opacity-80">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white" style={{ background: "linear-gradient(135deg, var(--accent), #a78bfa)" }}>IS</div>
             <div>
-              <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Igor S. Pallisser</div>
-              <div className="text-[11px]" style={{ color: "var(--text-muted)" }}>ADS · 3o Semestre</div>
+              <div className="text-sm font-medium" style={{ color: "var(--sidebar-text)" }}>Igor S. Pallisser</div>
+              <div className="text-[11px]" style={{ color: "var(--sidebar-muted)" }}>ADS · 3o Semestre</div>
             </div>
-          </div>
+          </button>
         </div>
       </aside>
     </>
@@ -149,9 +151,9 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
 }
 
 // ============ CARD COMPONENT ============
-function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function Card({ children, className = "", hover = true }: { children: React.ReactNode; className?: string; hover?: boolean }) {
   return (
-    <div className={`rounded-2xl p-5 ${className}`} style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+    <div className={`rounded-2xl p-5 ${hover ? "card-hover" : ""} ${className}`} style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
       {children}
     </div>
   );
@@ -850,7 +852,7 @@ function ForumView() {
           return (
             <div
               key={post.id}
-              className="rounded-2xl overflow-hidden transition-all"
+              className="rounded-2xl overflow-hidden forum-post-hover"
               style={{ background: "var(--bg-card)", border: `1px solid ${isExpanded ? post.subjectColor + "40" : "var(--border)"}` }}
             >
               {/* Header */}
@@ -1084,7 +1086,7 @@ function FinanceiroView() {
             { comp: "2026/2", valor: "R$ 431,27", pago: "07/02/2026", status: "Pago", color: "var(--green)" },
             { comp: "2026/1", valor: "R$ 431,27", pago: "08/01/2026", status: "Pago", color: "var(--green)" },
           ].map((p) => (
-            <div key={p.comp} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
+            <div key={p.comp} className="flex items-center justify-between p-3 rounded-xl row-hover" style={{ background: "var(--bg-primary)" }}>
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: p.color }} />
                 <div>
@@ -1715,7 +1717,7 @@ function BoletimView() {
                 const media = getMedia(g.n1, g.n2, g.n3);
                 const status = getStatus(media, g.n3);
                 return (
-                  <tr key={g.subject} style={{ borderBottom: "1px solid var(--border)" }}>
+                  <tr key={g.subject} className="row-hover" style={{ borderBottom: "1px solid var(--border)" }}>
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${g.color}12` }}>
@@ -1747,6 +1749,158 @@ function BoletimView() {
   );
 }
 
+// ============ PERFIL VIEW ============
+function PerfilView() {
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("unitime-theme") === "dark" ? "dark" : "light";
+    }
+    return "light";
+  });
+
+  const toggleTheme = (newTheme: "light" | "dark") => {
+    setTheme(newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("unitime-theme", newTheme);
+  };
+
+  const [notifEmail, setNotifEmail] = useState(true);
+  const [notifDeadline, setNotifDeadline] = useState(true);
+  const [compactMode, setCompactMode] = useState(false);
+
+  return (
+    <div className="animate-fade-up space-y-6 max-w-3xl">
+      <div className="flex items-center gap-2">
+        <Settings size={20} style={{ color: "var(--accent)" }} />
+        <h1 className="text-2xl font-bold tracking-tight">Perfil</h1>
+      </div>
+
+      {/* Profile Header */}
+      <Card>
+        <div className="flex items-center gap-5">
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-bold text-white flex-shrink-0" style={{ background: "linear-gradient(135deg, var(--accent), #a78bfa)" }}>
+            IS
+          </div>
+          <div>
+            <h2 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Igor S. Pallisser</h2>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
+              <span className="text-xs font-medium px-2.5 py-1 rounded-lg" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>RA: 12345678</span>
+              <span className="text-sm" style={{ color: "var(--text-secondary)" }}>ADS - Analise e Desenvolvimento de Sistemas</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
+              <span className="text-sm" style={{ color: "var(--text-muted)" }}>3o Semestre</span>
+              <span className="text-sm" style={{ color: "var(--text-muted)" }}>UniCesumar Ponta Grossa</span>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Aparencia */}
+      <Card>
+        <div className="flex items-center gap-2 mb-5">
+          <Sun size={16} style={{ color: "var(--amber)" }} />
+          <h2 className="font-semibold text-sm">Aparencia</h2>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>Tema</span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => toggleTheme("light")}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+              style={{
+                background: theme === "light" ? "var(--accent)" : "var(--bg-primary)",
+                color: theme === "light" ? "white" : "var(--text-secondary)",
+                border: `1px solid ${theme === "light" ? "transparent" : "var(--border)"}`,
+              }}
+            >
+              <Sun size={16} />
+              Claro
+            </button>
+            <button
+              onClick={() => toggleTheme("dark")}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+              style={{
+                background: theme === "dark" ? "var(--accent)" : "var(--bg-primary)",
+                color: theme === "dark" ? "white" : "var(--text-secondary)",
+                border: `1px solid ${theme === "dark" ? "transparent" : "var(--border)"}`,
+              }}
+            >
+              <Moon size={16} />
+              Escuro
+            </button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Dados Pessoais */}
+      <Card>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <User size={16} style={{ color: "var(--accent)" }} />
+            <h2 className="font-semibold text-sm">Dados Pessoais</h2>
+          </div>
+          <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all hover:scale-[1.02]" style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px solid rgba(0,168,157,0.15)" }}>
+            Editar Dados
+          </button>
+        </div>
+        <div className="space-y-4">
+          {[
+            { Icon: User, label: "Nome", value: "Igor Schiniegoski Pallisser" },
+            { Icon: Mail, label: "Email", value: "igor.pallisser@aluno.unicesumar.edu.br" },
+            { Icon: Phone, label: "Telefone", value: "(42) 99999-0000" },
+            { Icon: MapPin, label: "Endereco", value: "Ponta Grossa, PR" },
+          ].map((field) => (
+            <div key={field.label} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--accent-soft)" }}>
+                <field.Icon size={14} style={{ color: "var(--accent)" }} />
+              </div>
+              <div>
+                <div className="text-[11px] font-medium uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>{field.label}</div>
+                <div className="text-sm" style={{ color: "var(--text-primary)" }}>{field.value}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Configuracoes */}
+      <Card>
+        <div className="flex items-center gap-2 mb-5">
+          <Settings size={16} style={{ color: "var(--purple)" }} />
+          <h2 className="font-semibold text-sm">Configuracoes</h2>
+        </div>
+        <div className="space-y-3">
+          {[
+            { label: "Notificacoes por email", enabled: notifEmail, toggle: () => setNotifEmail(!notifEmail), Icon: Bell },
+            { label: "Lembretes de prazos", enabled: notifDeadline, toggle: () => setNotifDeadline(!notifDeadline), Icon: Clock },
+            { label: "Modo compacto", enabled: compactMode, toggle: () => setCompactMode(!compactMode), Icon: Ruler },
+          ].map((setting) => (
+            <div key={setting.label} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--purple-soft)" }}>
+                  <setting.Icon size={14} style={{ color: "var(--purple)" }} />
+                </div>
+                <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{setting.label}</span>
+              </div>
+              <button onClick={setting.toggle} className="transition-all duration-200">
+                {setting.enabled ? (
+                  <ToggleRight size={28} style={{ color: "var(--accent)" }} />
+                ) : (
+                  <ToggleLeft size={28} style={{ color: "var(--text-muted)" }} />
+                )}
+              </button>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 // ============ COMMAND PALETTE ============
 function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () => void; setTab: (t: Tab) => void }) {
   const [query, setQuery] = useState("");
@@ -1769,6 +1923,7 @@ function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () 
     { id: "produtividade", label: "Produtividade", Icon: TrendingUp, description: "Analise de horas e desempenho" },
     { id: "boletim", label: "Boletim", Icon: Award, description: "Notas e medias por disciplina" },
     { id: "sobre", label: "Sobre o Projeto", Icon: Info, description: "Documentacao e arquitetura" },
+    { id: "perfil", label: "Perfil", Icon: User, description: "Dados pessoais e configuracoes" },
   ];
 
   const taskResults = INITIAL_TASKS.filter((t) =>
@@ -1923,6 +2078,16 @@ export default function Dashboard() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Initialize theme from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("unitime-theme");
+    if (saved === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
+
   const views: Record<Tab, React.ReactNode> = {
     dashboard: <DashboardView setTab={setTab} />,
     horarios: <HorariosView />,
@@ -1937,6 +2102,7 @@ export default function Dashboard() {
     servicos: <ServicosView />,
     biblioteca: <BibliotecaView />,
     sobre: <SobreView />,
+    perfil: <PerfilView />,
   };
 
   return (
