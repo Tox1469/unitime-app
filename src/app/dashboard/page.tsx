@@ -625,25 +625,20 @@ const INITIAL_FORUM_POSTS: ForumPost[] = [
 
 function ForumView() {
   const [posts, setPosts] = useState<ForumPost[]>(INITIAL_FORUM_POSTS);
-  const [filter, setFilter] = useState<"todos" | "atividade" | "material" | "aviso">("todos");
-  const [subjectFilter, setSubjectFilter] = useState<string>("todas");
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [expandedPost, setExpandedPost] = useState<number | null>(null);
   const [uploadingId, setUploadingId] = useState<number | null>(null);
+  const [filter, setFilter] = useState<"todos" | "atividade" | "material" | "aviso">("todos");
 
-  const filtered = posts.filter((p) => {
-    if (filter !== "todos" && p.type !== filter) return false;
-    if (subjectFilter !== "todas" && p.subject !== subjectFilter) return false;
-    return true;
-  });
-
-  const subjects = Array.from(new Set(posts.map((p) => p.subject)));
+  const subjects = [
+    { name: "Análise e Projeto Orientado a Objetos", professor: "Prof.ª Jessyca K. Franquitto", color: "var(--amber)", Icon: BookOpen },
+    { name: "Estrutura de Dados", professor: "Prof.º João (Goku)", color: "var(--accent)", Icon: Code },
+    { name: "Programação Front-End", professor: "Prof.ª Emil E. Golombieski", color: "var(--green)", Icon: Monitor },
+    { name: "Mentalidade Criativa e Empreendedora", professor: "Prof.º Danilo", color: "var(--purple)", Icon: Lightbulb },
+  ];
 
   const handleSubmit = (id: number) => {
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, submitted: true, submittedFile: "Trabalho_Igor_Luis.pdf" } : p
-      )
-    );
+    setPosts((prev) => prev.map((p) => p.id === id ? { ...p, submitted: true, submittedFile: "Trabalho_Igor_Luis.pdf" } : p));
     setUploadingId(null);
   };
 
@@ -653,198 +648,192 @@ function ForumView() {
     aviso: { label: "Aviso", color: "var(--amber)", Icon: AlertCircle },
   };
 
-  const pendingCount = posts.filter((p) => p.type === "atividade" && !p.submitted).length;
-  const submittedCount = posts.filter((p) => p.type === "atividade" && p.submitted).length;
-  const materialCount = posts.filter((p) => p.type === "material").length;
+  // Subject list view
+  if (!selectedSubject) {
+    return (
+      <div className="animate-fade-up space-y-6">
+        <div className="flex items-center gap-2">
+          <MessageSquare size={20} style={{ color: "var(--accent)" }} />
+          <h1 className="text-2xl font-bold tracking-tight">Fórum</h1>
+        </div>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Escolha uma disciplina para acessar o fórum, atividades e materiais.</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {subjects.map((s) => {
+            const subPosts = posts.filter((p) => p.subject === s.name);
+            const pending = subPosts.filter((p) => p.type === "atividade" && !p.submitted).length;
+            const total = subPosts.length;
+            return (
+              <button
+                key={s.name}
+                onClick={() => setSelectedSubject(s.name)}
+                className="p-5 rounded-2xl text-left card-hover group"
+                style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${s.color}12` }}>
+                    <s.Icon size={22} style={{ color: s.color }} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-bold mb-0.5" style={{ color: "var(--text-primary)" }}>{s.name}</h3>
+                    <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>{s.professor}</p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-lg" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>{total} posts</span>
+                      {pending > 0 && (
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-lg" style={{ background: "var(--red-soft)", color: "var(--red)" }}>{pending} pendente{pending > 1 ? "s" : ""}</span>
+                      )}
+                    </div>
+                  </div>
+                  <ChevronRight size={18} className="mt-2 transition-transform group-hover:translate-x-1" style={{ color: "var(--text-muted)" }} />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // Subject detail view
+  const currentSubject = subjects.find((s) => s.name === selectedSubject)!;
+  const subjectPosts = posts.filter((p) => p.subject === selectedSubject && (filter === "todos" || p.type === filter));
 
   return (
     <div className="animate-fade-up space-y-6">
-      <div className="flex items-center gap-2">
-        <MessageSquare size={20} style={{ color: "var(--accent)" }} />
-        <h1 className="text-2xl font-bold tracking-tight">Fórum Acadêmico</h1>
+      {/* Back + title */}
+      <div>
+        <button onClick={() => { setSelectedSubject(null); setFilter("todos"); }} className="flex items-center gap-1 text-xs font-medium mb-3 transition-colors hover:underline" style={{ color: "var(--accent)" }}>
+          <ChevronRight size={12} style={{ transform: "rotate(180deg)" }} /> Voltar para disciplinas
+        </button>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${currentSubject.color}12` }}>
+            <currentSubject.Icon size={20} style={{ color: currentSubject.color }} />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>{selectedSubject}</h1>
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>{currentSubject.professor}</p>
+          </div>
+        </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Pending deadlines highlight */}
+      {(() => {
+        const pendingPosts = posts.filter((p) => p.subject === selectedSubject && p.type === "atividade" && !p.submitted && p.deadline);
+        if (pendingPosts.length === 0) return null;
+        return (
+          <div className="space-y-2">
+            {pendingPosts.map((p) => {
+              const deadlineDate = new Date(p.deadline!.split("/").reverse().join("-"));
+              const now = new Date();
+              const diffMs = deadlineDate.getTime() - now.getTime();
+              const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+              const isOverdue = diffDays < 0;
+              const isUrgent = diffDays >= 0 && diffDays <= 3;
+              const color = isOverdue ? "var(--red)" : isUrgent ? "var(--amber)" : "var(--accent)";
+              const bg = isOverdue ? "var(--red-soft)" : isUrgent ? "var(--amber-soft)" : "var(--accent-soft)";
+              const timeText = isOverdue ? `Atrasado ${Math.abs(diffDays)} dia${Math.abs(diffDays) > 1 ? "s" : ""}` : diffDays === 0 ? "Vence HOJE" : diffDays === 1 ? "Vence amanhã" : `Faltam ${diffDays} dias`;
+
+              return (
+                <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: bg, border: `1px solid ${color}25` }}>
+                  <AlertCircle size={16} style={{ color }} />
+                  <div className="flex-1">
+                    <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{p.title}</span>
+                    <span className="text-[11px] block" style={{ color: "var(--text-muted)" }}>Prazo: {p.deadline}</span>
+                  </div>
+                  <span className="text-xs font-bold px-3 py-1 rounded-lg" style={{ background: `${color}18`, color }}>{timeText}</span>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
+
+      {/* Filters */}
+      <div className="flex gap-2 flex-wrap">
         {[
-          { Icon: AlertCircle, label: "Pendentes", value: String(pendingCount), color: "var(--red)", bg: "var(--red-soft)" },
-          { Icon: CheckSquare, label: "Enviados", value: String(submittedCount), color: "var(--green)", bg: "var(--green-soft)" },
-          { Icon: Download, label: "Materiais", value: String(materialCount), color: "var(--accent)", bg: "var(--accent-soft)" },
-        ].map((s) => (
-          <Card key={s.label}>
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: s.bg }}>
-                <s.Icon size={18} style={{ color: s.color }} />
-              </div>
-              <span className="text-2xl font-bold tracking-tight" style={{ color: s.color }}>{s.value}</span>
-            </div>
-            <div className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{s.label}</div>
-          </Card>
+          { id: "todos" as const, label: "Todos" },
+          { id: "atividade" as const, label: "Atividades" },
+          { id: "material" as const, label: "Materiais" },
+          { id: "aviso" as const, label: "Avisos" },
+        ].map((f) => (
+          <button key={f.id} onClick={() => setFilter(f.id)} className="px-4 py-2 rounded-xl text-xs font-medium transition-all" style={{ background: filter === f.id ? "var(--accent)" : "var(--bg-card)", color: filter === f.id ? "white" : "var(--text-secondary)", border: `1px solid ${filter === f.id ? "transparent" : "var(--border)"}` }}>
+            {f.label}
+          </button>
         ))}
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex gap-2 flex-wrap">
-          {[
-            { id: "todos" as const, label: "Todos" },
-            { id: "atividade" as const, label: "Atividades" },
-            { id: "material" as const, label: "Materiais" },
-            { id: "aviso" as const, label: "Avisos" },
-          ].map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setFilter(f.id)}
-              className="px-4 py-2 rounded-xl text-xs font-medium transition-all"
-              style={{
-                background: filter === f.id ? "var(--accent)" : "var(--bg-card)",
-                color: filter === f.id ? "white" : "var(--text-secondary)",
-                border: `1px solid ${filter === f.id ? "transparent" : "var(--border)"}`,
-              }}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-        <select
-          value={subjectFilter}
-          onChange={(e) => setSubjectFilter(e.target.value)}
-          className="px-4 py-2 rounded-xl text-xs font-medium outline-none cursor-pointer"
-          style={{ background: "var(--bg-card)", color: "var(--text-secondary)", border: "1px solid var(--border)" }}
-        >
-          <option value="todas">Todas as disciplinas</option>
-          {subjects.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-      </div>
-
       {/* Posts */}
-      <div className="space-y-4">
-        {filtered.map((post) => {
+      <div className="space-y-3">
+        {subjectPosts.map((post) => {
           const tc = typeConfig[post.type];
           const isExpanded = expandedPost === post.id;
           const isOverdue = post.deadline && new Date(post.deadline.split("/").reverse().join("-")) < new Date() && !post.submitted;
 
           return (
-            <div
-              key={post.id}
-              className="rounded-2xl overflow-hidden forum-post-hover"
-              style={{ background: "var(--bg-card)", border: `1px solid ${isExpanded ? post.subjectColor + "40" : "var(--border)"}` }}
-            >
-              {/* Header */}
-              <button
-                onClick={() => setExpandedPost(isExpanded ? null : post.id)}
-                className="w-full p-5 text-left"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${post.subjectColor}12` }}>
-                    <post.SubjectIcon size={18} style={{ color: post.subjectColor }} />
+            <div key={post.id} className="rounded-2xl overflow-hidden forum-post-hover" style={{ background: "var(--bg-card)", border: `1px solid ${isExpanded ? currentSubject.color + "40" : "var(--border)"}` }}>
+              <button onClick={() => setExpandedPost(isExpanded ? null : post.id)} className="w-full p-4 text-left">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${tc.color}12` }}>
+                    <tc.Icon size={16} style={{ color: tc.color }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: post.subjectColor }}>{post.subject}</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: `${tc.color}12`, color: tc.color }}>
-                        {tc.label}
-                      </span>
-                      {post.type === "atividade" && post.submitted && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--green-soft)", color: "var(--green)" }}>
-                          Enviado
-                        </span>
-                      )}
-                      {isOverdue && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--red-soft)", color: "var(--red)" }}>
-                          Atrasado
-                        </span>
-                      )}
+                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                      <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: `${tc.color}12`, color: tc.color }}>{tc.label}</span>
+                      {post.type === "atividade" && post.submitted && <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--green-soft)", color: "var(--green)" }}>Enviado</span>}
+                      {isOverdue && <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--red-soft)", color: "var(--red)" }}>Atrasado</span>}
                     </div>
-                    <h3 className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>{post.title}</h3>
-                    <div className="flex items-center gap-3 mt-1.5">
-                      <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{post.professor}</span>
+                    <h3 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{post.title}</h3>
+                    <div className="flex items-center gap-3 mt-1">
                       <span className="text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{post.date}</span>
-                      {post.deadline && (
-                        <span className="text-[11px]" style={{ color: isOverdue ? "var(--red)" : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>
-                          Prazo: {post.deadline}
-                        </span>
-                      )}
+                      {post.deadline && <span className="text-[11px]" style={{ color: isOverdue ? "var(--red)" : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>Prazo: {post.deadline}</span>}
+                      {post.attachments.length > 0 && <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--text-muted)" }}><Paperclip size={10} />{post.attachments.length} arquivo{post.attachments.length > 1 ? "s" : ""}</span>}
                     </div>
                   </div>
-                  <ChevronRight
-                    size={16}
-                    className="flex-shrink-0 transition-transform"
-                    style={{ color: "var(--text-muted)", transform: isExpanded ? "rotate(90deg)" : "none" }}
-                  />
+                  <ChevronRight size={14} className="flex-shrink-0 transition-transform" style={{ color: "var(--text-muted)", transform: isExpanded ? "rotate(90deg)" : "none" }} />
                 </div>
               </button>
 
-              {/* Expanded content */}
               {isExpanded && (
-                <div className="px-5 pb-5 space-y-4" style={{ borderTop: "1px solid var(--border)" }}>
-                  <p className="text-sm leading-relaxed pt-4" style={{ color: "var(--text-secondary)" }}>
-                    {post.description}
-                  </p>
+                <div className="px-4 pb-4 space-y-3" style={{ borderTop: "1px solid var(--border)" }}>
+                  <p className="text-sm leading-relaxed pt-3" style={{ color: "var(--text-secondary)" }}>{post.description}</p>
 
-                  {/* Attachments */}
                   {post.attachments.length > 0 && (
-                    <div>
-                      <div className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>Arquivos</div>
-                      <div className="space-y-2">
-                        {post.attachments.map((att) => (
-                          <div
-                            key={att.name}
-                            className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:scale-[1.01]"
-                            style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}
-                          >
-                            <Paperclip size={14} style={{ color: post.subjectColor }} />
-                            <span className="text-sm flex-1" style={{ color: "var(--text-primary)" }}>{att.name}</span>
-                            <span className="text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{att.size}</span>
-                            <Download size={14} style={{ color: "var(--accent)" }} />
-                          </div>
-                        ))}
-                      </div>
+                    <div className="space-y-2">
+                      {post.attachments.map((att) => (
+                        <div key={att.name} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:scale-[1.01]" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+                          <Paperclip size={14} style={{ color: currentSubject.color }} />
+                          <span className="text-sm flex-1" style={{ color: "var(--text-primary)" }}>{att.name}</span>
+                          <span className="text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{att.size}</span>
+                          <Download size={14} style={{ color: "var(--accent)" }} />
+                        </div>
+                      ))}
                     </div>
                   )}
 
-                  {/* Submit area (only for atividade) */}
                   {post.type === "atividade" && (
-                    <div className="p-4 rounded-xl" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+                    <div className="p-3 rounded-xl" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
                       {post.submitted ? (
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--green-soft)" }}>
-                            <CheckSquare size={16} style={{ color: "var(--green)" }} />
-                          </div>
+                          <CheckSquare size={16} style={{ color: "var(--green)" }} />
                           <div>
-                            <div className="text-sm font-medium" style={{ color: "var(--green)" }}>Trabalho enviado</div>
-                            <div className="text-[11px] flex items-center gap-1.5 mt-0.5" style={{ color: "var(--text-muted)" }}>
-                              <Paperclip size={10} />
-                              {post.submittedFile}
-                            </div>
+                            <span className="text-sm font-medium" style={{ color: "var(--green)" }}>Trabalho enviado</span>
+                            <span className="text-[11px] flex items-center gap-1 mt-0.5" style={{ color: "var(--text-muted)" }}><Paperclip size={10} />{post.submittedFile}</span>
                           </div>
                         </div>
                       ) : uploadingId === post.id ? (
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "var(--bg-card)", border: "1px dashed var(--accent)" }}>
-                            <FileText size={16} style={{ color: "var(--accent)" }} />
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-3 p-2 rounded-lg" style={{ border: "1px dashed var(--accent)" }}>
+                            <FileText size={14} style={{ color: "var(--accent)" }} />
                             <span className="text-sm flex-1" style={{ color: "var(--text-primary)" }}>Trabalho_Igor_Luis.pdf</span>
-                            <button onClick={() => setUploadingId(null)} className="p-1 rounded-lg hover:bg-red-500/10">
-                              <X size={14} style={{ color: "var(--red)" }} />
-                            </button>
+                            <button onClick={() => setUploadingId(null)} className="p-1"><X size={12} style={{ color: "var(--red)" }} /></button>
                           </div>
-                          <button
-                            onClick={() => handleSubmit(post.id)}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-medium transition-all hover:opacity-90"
-                            style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}
-                          >
-                            <Send size={14} /> Enviar Trabalho
+                          <button onClick={() => handleSubmit(post.id)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium" style={{ background: "var(--accent)" }}>
+                            <Send size={14} /> Enviar
                           </button>
                         </div>
                       ) : (
-                        <button
-                          onClick={() => setUploadingId(post.id)}
-                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-[1.02]"
-                          style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px dashed rgba(0,168,157,0.3)" }}
-                        >
-                          <Upload size={14} /> Anexar e enviar trabalho
+                        <button onClick={() => setUploadingId(post.id)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium" style={{ color: "var(--accent)", border: "1px dashed rgba(0,168,157,0.3)" }}>
+                          <Upload size={14} /> Enviar trabalho
                         </button>
                       )}
                     </div>
@@ -855,10 +844,10 @@ function ForumView() {
           );
         })}
 
-        {filtered.length === 0 && (
-          <div className="text-center py-16">
-            <MessageSquare size={32} className="mx-auto mb-3" style={{ color: "var(--text-muted)" }} />
-            <p className="text-sm" style={{ color: "var(--text-muted)" }}>Nenhuma postagem encontrada</p>
+        {subjectPosts.length === 0 && (
+          <div className="text-center py-12">
+            <MessageSquare size={28} className="mx-auto mb-2" style={{ color: "var(--text-muted)" }} />
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>Nenhuma postagem neste filtro</p>
           </div>
         )}
       </div>
