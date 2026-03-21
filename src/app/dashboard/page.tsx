@@ -1530,91 +1530,94 @@ function SobreView() {
 }
 
 // ============ BOLETIM VIEW ============
+const BOLETIM_COLS = ["TUT", "TEO", "TEO1", "TEO2", "PRA", "PRA1", "PRA2", "PRA3", "PRA4", "INT", "INT1", "INT2", "BIM1", "BIM2", "BIM3", "BIM4"];
+
+const BOLETIM_DATA = [
+  {
+    subject: "Análise e Projeto Orientado a Objetos",
+    professor: "Prof.ª Jessyca K. Franquitto",
+    color: "var(--amber)",
+    Icon: BookOpen,
+    grades: { TUT: "--", TEO: "--", TEO1: "--", TEO2: "--", PRA: "--", PRA1: 8.0, PRA2: 7.5, PRA3: "--", PRA4: "--", INT: "--", INT1: "--", INT2: "--", BIM1: 7.8, BIM2: "--", BIM3: "--", BIM4: "--" } as Record<string, number | string>,
+  },
+  {
+    subject: "Estrutura de Dados",
+    professor: "Prof.º João (Goku)",
+    color: "var(--accent)",
+    Icon: Code,
+    grades: { TUT: "--", TEO: "--", TEO1: "--", TEO2: "--", PRA: "--", PRA1: 7.0, PRA2: 6.5, PRA3: "--", PRA4: "--", INT: "--", INT1: "--", INT2: "--", BIM1: 6.8, BIM2: "--", BIM3: "--", BIM4: "--" } as Record<string, number | string>,
+  },
+  {
+    subject: "Mentalidade Criativa e Empreendedora",
+    professor: "Prof.º Danilo",
+    color: "var(--purple)",
+    Icon: Lightbulb,
+    grades: { TUT: "--", TEO: "--", TEO1: "--", TEO2: "--", PRA: "--", PRA1: 8.5, PRA2: 9.0, PRA3: "--", PRA4: "--", INT: "--", INT1: "--", INT2: "--", BIM1: 8.8, BIM2: "--", BIM3: "--", BIM4: "--" } as Record<string, number | string>,
+  },
+  {
+    subject: "Programação Front-End",
+    professor: "Prof.ª Emil E. Golombieski",
+    color: "var(--green)",
+    Icon: Monitor,
+    grades: { TUT: "--", TEO: "--", TEO1: "--", TEO2: "--", PRA: "--", PRA1: 9.0, PRA2: 8.5, PRA3: "--", PRA4: "--", INT: "--", INT1: "--", INT2: "--", BIM1: 8.8, BIM2: "--", BIM3: "--", BIM4: "--" } as Record<string, number | string>,
+  },
+];
+
 function BoletimView() {
-  const getMedia = (n1: string | number, n2: string | number, n3: string | number) => {
-    const grades = [n1, n2, n3].filter((g) => typeof g === "number") as number[];
-    if (grades.length === 0) return null;
-    return grades.reduce((a, b) => a + b, 0) / grades.length;
-  };
-
-  const getStatus = (media: number | null, n3: string | number) => {
-    if (media === null) return { label: "Em andamento", color: "var(--amber)" };
-    if (typeof n3 === "string") return { label: "Em andamento", color: "var(--amber)" };
-    if (media >= 7) return { label: "Aprovado", color: "var(--green)" };
-    if (media < 4) return { label: "Reprovado", color: "var(--red)" };
-    return { label: "Em andamento", color: "var(--amber)" };
-  };
-
-  const allMedias = GRADES_DATA.map((g) => getMedia(g.n1, g.n2, g.n3)).filter((m) => m !== null) as number[];
-  const avgAll = allMedias.length > 0 ? allMedias.reduce((a, b) => a + b, 0) / allMedias.length : 0;
-  const approvedCount = GRADES_DATA.filter((g) => {
-    const m = getMedia(g.n1, g.n2, g.n3);
-    return m !== null && typeof g.n3 === "number" && m >= 7;
-  }).length;
+  const [expandedSubject, setExpandedSubject] = useState<string | null>(null);
 
   return (
     <div className="animate-fade-up space-y-6">
       <div className="flex items-center gap-2">
         <Award size={20} style={{ color: "var(--accent)" }} />
-        <h1 className="text-2xl font-bold tracking-tight">Boletim Academico</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Boletim Acadêmico</h1>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[
-          { label: "Total Disciplinas", value: String(GRADES_DATA.length), Icon: BookOpen, color: "var(--accent)", bg: "var(--accent-soft)" },
-          { label: "Aprovadas", value: String(approvedCount), Icon: CheckSquare, color: "var(--green)", bg: "var(--green-soft)" },
-          { label: "Media Geral", value: avgAll.toFixed(1), Icon: TrendingUp, color: "var(--purple)", bg: "var(--purple-soft, rgba(168,85,247,0.1))" },
-        ].map((s) => (
-          <Card key={s.label}>
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: s.bg }}>
-                <s.Icon size={18} style={{ color: s.color }} />
-              </div>
-              <span className="text-2xl font-bold tracking-tight" style={{ color: s.color }}>{s.value}</span>
-            </div>
-            <div className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{s.label}</div>
-          </Card>
-        ))}
+      {/* Info banner like Studeo */}
+      <div className="p-4 rounded-xl flex items-start gap-3" style={{ background: "var(--accent-soft)", borderLeft: "4px solid var(--accent)" }}>
+        <Info size={16} className="mt-0.5 flex-shrink-0" style={{ color: "var(--accent)" }} />
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          Veja as notas das disciplinas atuais (disciplinas que está cursando). Clique em uma disciplina para ver os detalhes.
+        </p>
       </div>
 
-      {/* Grades table */}
+      {/* Grades table - Studeo style */}
       <Card>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-[11px]">
             <thead>
-              <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                {["Disciplina", "Professor", "N1", "N2", "N3", "Media", "Status"].map((h) => (
-                  <th key={h} className="text-left py-3 px-3 text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{h}</th>
+              <tr style={{ borderBottom: "2px solid var(--border)" }}>
+                <th className="text-left py-3 px-3 text-[10px] font-bold uppercase tracking-widest sticky left-0" style={{ color: "var(--text-muted)", background: "var(--bg-card)", minWidth: "180px" }}>Nome</th>
+                {BOLETIM_COLS.map((h) => (
+                  <th key={h} className="text-center py-3 px-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)", minWidth: "45px" }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {GRADES_DATA.map((g) => {
-                const media = getMedia(g.n1, g.n2, g.n3);
-                const status = getStatus(media, g.n3);
+              {BOLETIM_DATA.map((d) => {
+                const isExpanded = expandedSubject === d.subject;
                 return (
-                  <tr key={g.subject} className="row-hover" style={{ borderBottom: "1px solid var(--border)" }}>
-                    <td className="py-3 px-3">
+                  <tr
+                    key={d.subject}
+                    className="row-hover cursor-pointer"
+                    style={{ borderBottom: "1px solid var(--border)", background: isExpanded ? "var(--accent-soft)" : "transparent" }}
+                    onClick={() => setExpandedSubject(isExpanded ? null : d.subject)}
+                  >
+                    <td className="py-3 px-3 sticky left-0" style={{ background: isExpanded ? "var(--accent-soft)" : "var(--bg-card)" }}>
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${g.color}12` }}>
-                          <g.Icon size={14} style={{ color: g.color }} />
-                        </div>
-                        <span className="font-medium" style={{ color: "var(--text-primary)" }}>{g.subject}</span>
+                        <ChevronRight size={12} className="flex-shrink-0 transition-transform" style={{ color: "var(--text-muted)", transform: isExpanded ? "rotate(90deg)" : "none" }} />
+                        <span className="font-semibold" style={{ color: isExpanded ? "var(--accent)" : "var(--text-primary)" }}>{d.subject.toUpperCase()}</span>
                       </div>
                     </td>
-                    <td className="py-3 px-3" style={{ color: "var(--text-secondary)" }}>{g.professor}</td>
-                    <td className="py-3 px-3 font-medium" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains)" }}>{typeof g.n1 === "number" ? g.n1.toFixed(1) : g.n1}</td>
-                    <td className="py-3 px-3 font-medium" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains)" }}>{typeof g.n2 === "number" ? g.n2.toFixed(1) : g.n2}</td>
-                    <td className="py-3 px-3 font-medium" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains)" }}>{typeof g.n3 === "number" ? g.n3.toFixed(1) : g.n3}</td>
-                    <td className="py-3 px-3 font-bold" style={{ color: media !== null && media >= 7 ? "var(--green)" : media !== null && media < 4 ? "var(--red)" : "var(--amber)", fontFamily: "var(--font-jetbrains)" }}>
-                      {media !== null ? media.toFixed(1) : "--"}
-                    </td>
-                    <td className="py-3 px-3">
-                      <span className="text-xs font-medium px-2.5 py-1 rounded-lg" style={{ background: `${status.color}12`, color: status.color }}>
-                        {status.label}
-                      </span>
-                    </td>
+                    {BOLETIM_COLS.map((col) => {
+                      const val = d.grades[col];
+                      const isNumber = typeof val === "number";
+                      return (
+                        <td key={col} className="text-center py-3 px-1.5 font-medium" style={{ color: isNumber ? (val >= 7 ? "var(--green)" : val < 4 ? "var(--red)" : "var(--text-primary)") : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>
+                          {isNumber ? val.toFixed(1) : "-"}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })}
@@ -1622,6 +1625,65 @@ function BoletimView() {
           </table>
         </div>
       </Card>
+
+      {/* Expanded detail - shows when a subject is clicked */}
+      {expandedSubject && (() => {
+        const d = BOLETIM_DATA.find((b) => b.subject === expandedSubject);
+        if (!d) return null;
+        const numericGrades = Object.entries(d.grades).filter(([, v]) => typeof v === "number") as [string, number][];
+        const avg = numericGrades.length > 0 ? numericGrades.reduce((s, [, v]) => s + v, 0) / numericGrades.length : 0;
+
+        return (
+          <Card>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${d.color}12` }}>
+                <d.Icon size={20} style={{ color: d.color }} />
+              </div>
+              <div>
+                <h2 className="text-base font-bold" style={{ color: "var(--text-primary)" }}>{d.subject}</h2>
+                <p className="text-xs" style={{ color: "var(--text-secondary)" }}>{d.professor}</p>
+              </div>
+            </div>
+
+            {/* Grade cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 mb-5">
+              {Object.entries(d.grades).map(([key, val]) => {
+                const isNumber = typeof val === "number";
+                return (
+                  <div key={key} className="p-3 rounded-xl text-center" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+                    <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "var(--text-muted)" }}>{key}</div>
+                    <div className="text-lg font-bold" style={{ color: isNumber ? (val >= 7 ? "var(--green)" : val < 4 ? "var(--red)" : "var(--text-primary)") : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>
+                      {isNumber ? val.toFixed(1) : "-"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Summary */}
+            <div className="flex flex-wrap gap-4 p-4 rounded-xl" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)" }}>
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Média Atual</div>
+                <div className="text-2xl font-bold" style={{ color: avg >= 7 ? "var(--green)" : avg < 4 ? "var(--red)" : "var(--amber)", fontFamily: "var(--font-jetbrains)" }}>
+                  {avg > 0 ? avg.toFixed(1) : "--"}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Notas Lançadas</div>
+                <div className="text-2xl font-bold" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains)" }}>
+                  {numericGrades.length}/{Object.keys(d.grades).length}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Situação</div>
+                <span className="text-sm font-semibold px-3 py-1 rounded-lg inline-block mt-1" style={{ background: "var(--amber-soft)", color: "var(--amber)" }}>
+                  Em andamento
+                </span>
+              </div>
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }
