@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
-  Clock, CheckSquare, Calendar, BarChart3, Timer, StickyNote, TrendingUp,
-  LayoutDashboard, Plus, Trash2, Play, Pause, RotateCcw, ChevronRight,
-  BookOpen, Laptop, Globe, Calculator, Code, Flame, Award, Coffee,
+  Clock, CheckSquare, Calendar, BarChart3, StickyNote, TrendingUp,
+  LayoutDashboard, Plus, Trash2, ChevronRight,
+  BookOpen, Laptop, Globe, Calculator, Code, Award, Coffee,
   Sun, Moon, X, Info, Server, Database, Users, Rocket, DollarSign, Shield,
   Layers, ArrowRight, GitBranch, Cpu, Cloud, Smartphone, GraduationCap,
   Search, Menu, Lightbulb, Monitor, MessageSquare, FileText, Upload,
@@ -17,7 +17,23 @@ import {
 // ============ TYPES ============
 type Task = { id: number; text: string; done: boolean; priority: "alta" | "media" | "baixa"; date: string };
 type Note = { id: number; text: string; date: string };
-type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "pomodoro" | "notas" | "produtividade" | "boletim" | "forum" | "financeiro" | "servicos" | "biblioteca" | "sobre" | "perfil";
+type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "notas" | "boletim" | "forum" | "financeiro" | "servicos" | "biblioteca" | "sobre" | "perfil";
+
+type Notification = {
+  id: number;
+  text: string;
+  time: string;
+  read: boolean;
+  type: "prazo" | "nota" | "aviso" | "forum";
+};
+
+const INITIAL_NOTIFICATIONS: Notification[] = [
+  { id: 1, text: "Prova de Estrutura de Dados em 3 dias", time: "Ha 2h", read: false, type: "prazo" },
+  { id: 2, text: "Prof.a Jessyca postou novo material em APOO", time: "Ha 5h", read: false, type: "forum" },
+  { id: 3, text: "Nota do 1o bimestre lancada em Front-End", time: "Ha 1 dia", read: false, type: "nota" },
+  { id: 4, text: "Prazo do trabalho de Mentalidade Criativa amanha", time: "Ha 1 dia", read: true, type: "prazo" },
+  { id: 5, text: "Aula de quinta sera no Lab 2", time: "Ha 2 dias", read: true, type: "aviso" },
+];
 
 // ============ DATA ============
 const SCHEDULE = [
@@ -52,15 +68,6 @@ const INITIAL_NOTES: Note[] = [
   { id: 3, text: "Prof. João (Goku) vai passar lista extra de exercícios de ED", date: "19/03" },
 ];
 
-const PROD_DATA = [
-  { label: "Seg", hours: 4.5 },
-  { label: "Ter", hours: 3.2 },
-  { label: "Qua", hours: 5.1 },
-  { label: "Qui", hours: 2.8 },
-  { label: "Sex", hours: 4.0 },
-  { label: "Sáb", hours: 6.2 },
-  { label: "Dom", hours: 1.5 },
-];
 
 const GRADES_DATA = [
   { subject: "Análise e Projeto Orientado a Objetos", professor: "Prof.ª Jessyca K. Franquitto", n1: 8.0, n2: 7.5, n3: "--" as string | number, color: "var(--amber)", Icon: BookOpen },
@@ -71,21 +78,39 @@ const GRADES_DATA = [
 
 // ============ SIDEBAR ============
 function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) => void; open: boolean; onClose: () => void }) {
-  const items: { id: Tab; Icon: React.ComponentType<{ size?: number }>; label: string }[] = [
-    { id: "dashboard", Icon: LayoutDashboard, label: "Dashboard" },
-    { id: "horarios", Icon: Calendar, label: "Horarios" },
-    { id: "tarefas", Icon: CheckSquare, label: "Tarefas" },
-    { id: "calendario", Icon: Calendar, label: "Calendario" },
-    { id: "pomodoro", Icon: Timer, label: "Pomodoro" },
-    { id: "notas", Icon: StickyNote, label: "Notas" },
-    { id: "produtividade", Icon: TrendingUp, label: "Produtividade" },
-    { id: "boletim", Icon: Award, label: "Boletim" },
-    { id: "forum", Icon: MessageSquare, label: "Fórum" },
-    { id: "financeiro", Icon: DollarSign, label: "Financeiro" },
-    { id: "servicos", Icon: Briefcase, label: "Serviços" },
-    { id: "biblioteca", Icon: BookOpen, label: "Biblioteca" },
-    { id: "sobre", Icon: Info, label: "Sobre o Projeto" },
-    { id: "perfil", Icon: User, label: "Perfil" },
+  const sections: { label: string; items: { id: Tab; Icon: React.ComponentType<{ size?: number }>; label: string }[] }[] = [
+    {
+      label: "PRINCIPAL",
+      items: [
+        { id: "dashboard", Icon: LayoutDashboard, label: "Dashboard" },
+        { id: "horarios", Icon: Calendar, label: "Horarios" },
+        { id: "tarefas", Icon: CheckSquare, label: "Tarefas" },
+        { id: "calendario", Icon: Calendar, label: "Calendario" },
+      ],
+    },
+    {
+      label: "ACADEMICO",
+      items: [
+        { id: "forum", Icon: MessageSquare, label: "Forum" },
+        { id: "boletim", Icon: Award, label: "Boletim" },
+        { id: "notas", Icon: StickyNote, label: "Notas" },
+      ],
+    },
+    {
+      label: "SERVICOS",
+      items: [
+        { id: "financeiro", Icon: DollarSign, label: "Financeiro" },
+        { id: "servicos", Icon: Briefcase, label: "Servicos" },
+        { id: "biblioteca", Icon: BookOpen, label: "Biblioteca" },
+      ],
+    },
+    {
+      label: "CONTA",
+      items: [
+        { id: "perfil", Icon: User, label: "Perfil" },
+        { id: "sobre", Icon: Info, label: "Sobre o Projeto" },
+      ],
+    },
   ];
 
   const handleTabClick = (id: Tab) => {
@@ -116,23 +141,29 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
           </span>
         </Link>
 
-        <nav className="flex-1 py-5 px-3 space-y-0.5 overflow-y-auto">
-          <p className="text-[10px] font-medium tracking-widest uppercase px-4 mb-3" style={{ color: "var(--sidebar-muted)" }}>Menu</p>
-          {items.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => handleTabClick(item.id)}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left group"
-              style={{
-                background: tab === item.id ? "rgba(0,168,157,0.15)" : "transparent",
-                color: tab === item.id ? "var(--accent)" : "var(--sidebar-muted)",
-                border: tab === item.id ? "1px solid rgba(0,168,157,0.25)" : "1px solid transparent",
-              }}
-            >
-              <item.Icon size={18} />
-              {item.label}
-              {tab === item.id && <div className="ml-auto w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />}
-            </button>
+        <nav className="flex-1 py-5 px-3 overflow-y-auto">
+          {sections.map((section) => (
+            <div key={section.label} className="mb-4">
+              <p className="text-[10px] font-medium tracking-widest uppercase px-4 mb-2" style={{ color: "var(--sidebar-muted)" }}>{section.label}</p>
+              <div className="space-y-0.5">
+                {section.items.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => handleTabClick(item.id)}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left group"
+                    style={{
+                      background: tab === item.id ? "rgba(0,168,157,0.15)" : "transparent",
+                      color: tab === item.id ? "var(--accent)" : "var(--sidebar-muted)",
+                      border: tab === item.id ? "1px solid rgba(0,168,157,0.25)" : "1px solid transparent",
+                    }}
+                  >
+                    <item.Icon size={18} />
+                    {item.label}
+                    {tab === item.id && <div className="ml-auto w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />}
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
 
@@ -160,7 +191,7 @@ function Card({ children, className = "", hover = true }: { children: React.Reac
 }
 
 // ============ VIEWS ============
-function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
+function DashboardView({ setTab, notifications }: { setTab: (t: Tab) => void; notifications: Notification[] }) {
   const today = new Date();
   const dayNames = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
   const greeting = today.getHours() < 12 ? "Bom dia" : today.getHours() < 18 ? "Boa tarde" : "Boa noite";
@@ -182,8 +213,8 @@ function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { Icon: BookOpen, label: "Tarefas Pendentes", value: "4", color: "var(--amber)", bg: "var(--amber-soft)" },
-          { Icon: CheckSquare, label: "Concluídas", value: "2", color: "var(--green)", bg: "var(--green-soft)" },
-          { Icon: Flame, label: "Pomodoros Hoje", value: "3", color: "var(--red)", bg: "var(--red-soft)" },
+          { Icon: CheckSquare, label: "Concluidas", value: "2", color: "var(--green)", bg: "var(--green-soft)" },
+          { Icon: Bell, label: "Notificacoes", value: String(notifications.filter((n) => !n.read).length), color: "var(--red)", bg: "var(--red-soft)" },
           { Icon: Clock, label: "Horas Estudadas", value: "4.5h", color: "var(--accent)", bg: "var(--accent-soft)" },
         ].map((s) => (
           <Card key={s.label}>
@@ -253,28 +284,29 @@ function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
         </Card>
       </div>
 
-      {/* Weekly chart */}
+      {/* Recent Notifications */}
       <Card>
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <BarChart3 size={16} style={{ color: "var(--purple)" }} />
-            <h2 className="font-semibold text-sm">Produtividade Semanal</h2>
+            <Bell size={16} style={{ color: "var(--red)" }} />
+            <h2 className="font-semibold text-sm">Notificacoes Recentes</h2>
           </div>
-          <button onClick={() => setTab("produtividade")} className="flex items-center gap-1 text-xs" style={{ color: "var(--accent)" }}>
-            Detalhes <ChevronRight size={12} />
-          </button>
         </div>
-        <div className="flex items-end gap-3 h-36">
-          {PROD_DATA.map((d) => {
-            const isHigh = d.hours > 4;
+        <div className="space-y-2.5">
+          {notifications.filter((n) => !n.read).slice(0, 3).map((notif) => {
+            const typeColors: Record<Notification["type"], string> = { prazo: "var(--red)", nota: "var(--green)", aviso: "var(--amber)", forum: "var(--accent)" };
+            const nc = typeColors[notif.type];
             return (
-              <div key={d.label} className="flex-1 flex flex-col items-center gap-1.5">
-                <span className="text-[11px] font-medium" style={{ color: isHigh ? "var(--accent)" : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{d.hours}h</span>
-                <div className="w-full rounded-xl transition-all" style={{ height: `${(d.hours / 7) * 100}%`, background: isHigh ? "linear-gradient(to top, var(--accent), #00c4b8)" : "var(--bg-elevated)" }} />
-                <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{d.label}</span>
+              <div key={notif.id} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
+                <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: nc }} />
+                <span className="text-sm flex-1" style={{ color: "var(--text-primary)" }}>{notif.text}</span>
+                <span className="text-[11px] flex-shrink-0" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{notif.time}</span>
               </div>
             );
           })}
+          {notifications.filter((n) => !n.read).length === 0 && (
+            <p className="text-sm text-center py-4" style={{ color: "var(--text-muted)" }}>Nenhuma notificacao pendente</p>
+          )}
         </div>
       </Card>
     </div>
@@ -423,99 +455,6 @@ function CalendarioView() {
   );
 }
 
-function PomodoroView() {
-  const [minutes, setMinutes] = useState(25);
-  const [seconds, setSeconds] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [mode, setMode] = useState<"foco" | "pausa">("foco");
-  const [sessions, setSessions] = useState(0);
-
-  const reset = useCallback((m: "foco" | "pausa") => { setMode(m); setMinutes(m === "foco" ? 25 : 5); setSeconds(0); setRunning(false); }, []);
-
-  useEffect(() => {
-    if (!running) return;
-    const t = setInterval(() => {
-      setSeconds((p) => {
-        if (p === 0) {
-          if (minutes === 0) { setRunning(false); if (mode === "foco") { setSessions((s) => s + 1); reset("pausa"); } else { reset("foco"); } return 0; }
-          setMinutes((m) => m - 1); return 59;
-        }
-        return p - 1;
-      });
-    }, 1000);
-    return () => clearInterval(t);
-  }, [running, minutes, mode, reset]);
-
-  const total = mode === "foco" ? 25 * 60 : 5 * 60;
-  const elapsed = total - (minutes * 60 + seconds);
-  const progress = (elapsed / total) * 100;
-  const circumference = 2 * Math.PI * 118;
-
-  return (
-    <div className="animate-fade-up space-y-6">
-      <div className="flex items-center gap-2">
-        <Timer size={20} style={{ color: "var(--red)" }} />
-        <h1 className="text-2xl font-bold tracking-tight">Pomodoro Timer</h1>
-      </div>
-
-      <div className="flex justify-center">
-        <Card className="text-center max-w-md w-full">
-          <div className="flex gap-2 justify-center mb-10">
-            {[
-              { m: "foco" as const, label: "Foco · 25min", color: "var(--accent)" },
-              { m: "pausa" as const, label: "Pausa · 5min", color: "var(--green)" },
-            ].map((b) => (
-              <button key={b.m} onClick={() => reset(b.m)} className="px-5 py-2 rounded-xl text-sm font-medium transition-all" style={{ background: mode === b.m ? `${b.color}` : "var(--bg-primary)", color: mode === b.m ? "white" : "var(--text-secondary)", border: `1px solid ${mode === b.m ? "transparent" : "var(--border)"}` }}>
-                {b.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="relative w-64 h-64 mx-auto mb-10">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 256 256">
-              <circle cx="128" cy="128" r="118" fill="none" stroke="var(--bg-primary)" strokeWidth="6" />
-              <circle cx="128" cy="128" r="118" fill="none" stroke={mode === "foco" ? "var(--accent)" : "var(--green)"} strokeWidth="6" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress / 100)} strokeLinecap="round" className="transition-all duration-1000" />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-6xl font-bold tracking-tighter" style={{ fontFamily: "var(--font-jetbrains)", color: "var(--text-primary)" }}>
-                {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
-              </div>
-              <div className="text-xs font-medium mt-2 uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
-                {mode === "foco" ? "Tempo de Foco" : "Intervalo"}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-3 justify-center mb-8">
-            <button onClick={() => setRunning(!running)} className="flex items-center gap-2 px-8 py-3 rounded-xl text-white font-semibold transition-all hover:scale-[1.02]" style={{ background: running ? "var(--red)" : "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
-              {running ? <><Pause size={18} /> Pausar</> : <><Play size={18} /> Iniciar</>}
-            </button>
-            <button onClick={() => reset(mode)} className="flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all" style={{ background: "var(--bg-primary)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
-              <RotateCcw size={16} /> Reset
-            </button>
-          </div>
-
-          <div className="flex justify-center gap-8 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1.5">
-                <Flame size={14} style={{ color: "var(--accent)" }} />
-                <span className="text-2xl font-bold" style={{ color: "var(--accent)" }}>{sessions}</span>
-              </div>
-              <span className="text-[10px] uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Sessões</span>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1.5">
-                <Award size={14} style={{ color: "var(--green)" }} />
-                <span className="text-2xl font-bold" style={{ color: "var(--green)" }}>{(sessions * 25 / 60).toFixed(1)}h</span>
-              </div>
-              <span className="text-[10px] uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Total</span>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </div>
-  );
-}
 
 function NotasView() {
   const [notes, setNotes] = useState<Note[]>(INITIAL_NOTES);
@@ -558,76 +497,6 @@ function NotasView() {
   );
 }
 
-function ProdutividadeView() {
-  const maxH = Math.max(...PROD_DATA.map((d) => d.hours));
-  const totalH = PROD_DATA.reduce((s, d) => s + d.hours, 0);
-  const avgH = totalH / 7;
-
-  const subjects = [
-    { name: "Estrutura de Dados", hours: 8.5, pct: 31, color: "var(--accent)", Icon: Code },
-    { name: "Programação Front-End", hours: 7.2, pct: 26, color: "var(--green)", Icon: Monitor },
-    { name: "Análise e Projeto OO", hours: 6.0, pct: 22, color: "var(--amber)", Icon: BookOpen },
-    { name: "Mentalidade Criativa", hours: 3.5, pct: 13, color: "var(--purple)", Icon: Lightbulb },
-    { name: "Estudos Extras", hours: 2.1, pct: 8, color: "var(--red)", Icon: Flame },
-  ];
-
-  return (
-    <div className="animate-fade-up space-y-6">
-      <div className="flex items-center gap-2">
-        <TrendingUp size={20} style={{ color: "var(--purple)" }} />
-        <h1 className="text-2xl font-bold tracking-tight">Análise de Produtividade</h1>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[
-          { label: "Total Semanal", value: `${totalH.toFixed(1)}h`, Icon: Clock, color: "var(--accent)", bg: "var(--accent-soft)" },
-          { label: "Média Diária", value: `${avgH.toFixed(1)}h`, Icon: BarChart3, color: "var(--green)", bg: "var(--green-soft)" },
-          { label: "Melhor Dia", value: `${maxH}h`, Icon: Award, color: "var(--amber)", bg: "var(--amber-soft)" },
-        ].map((s) => (
-          <Card key={s.label}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ background: s.bg }}>
-              <s.Icon size={18} style={{ color: s.color }} />
-            </div>
-            <div className="text-2xl font-bold tracking-tight" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{s.label}</div>
-          </Card>
-        ))}
-      </div>
-
-      <Card>
-        <h2 className="font-semibold text-sm mb-5">Horas por Dia</h2>
-        <div className="flex items-end gap-4 h-48">
-          {PROD_DATA.map((d) => (
-            <div key={d.label} className="flex-1 flex flex-col items-center gap-2">
-              <span className="text-sm font-bold" style={{ color: d.hours >= avgH ? "var(--accent)" : "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{d.hours}h</span>
-              <div className="w-full rounded-xl transition-all" style={{ height: `${(d.hours / maxH) * 100}%`, background: d.hours >= avgH ? "linear-gradient(to top, var(--accent), #00c4b8)" : "var(--bg-elevated)" }} />
-              <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{d.label}</span>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      <Card>
-        <h2 className="font-semibold text-sm mb-5">Tempo por Disciplina</h2>
-        <div className="space-y-4">
-          {subjects.map((s) => (
-            <div key={s.name} className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${s.color}12` }}>
-                <s.Icon size={14} style={{ color: s.color }} />
-              </div>
-              <span className="text-sm w-44 flex-shrink-0" style={{ color: "var(--text-primary)" }}>{s.name}</span>
-              <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: "var(--bg-primary)" }}>
-                <div className="h-full rounded-full transition-all" style={{ width: `${s.pct}%`, background: `linear-gradient(90deg, ${s.color}, ${s.color}aa)` }} />
-              </div>
-              <span className="text-sm font-medium w-12 text-right" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-jetbrains)" }}>{s.hours}h</span>
-              <span className="text-xs w-10 text-right font-medium" style={{ color: s.color }}>{s.pct}%</span>
-            </div>
-          ))}
-        </div>
-      </Card>
-    </div>
-  );
-}
 
 // ============ FORUM ============
 type ForumPost = {
@@ -1918,10 +1787,12 @@ function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () 
     { id: "horarios", label: "Horarios", Icon: Calendar, description: "Grade de aulas semanal" },
     { id: "tarefas", label: "Tarefas", Icon: CheckSquare, description: "Lista de tarefas e pendencias" },
     { id: "calendario", label: "Calendario", Icon: Calendar, description: "Eventos e datas importantes" },
-    { id: "pomodoro", label: "Pomodoro", Icon: Timer, description: "Timer de estudo focado" },
     { id: "notas", label: "Notas", Icon: StickyNote, description: "Bloco de notas rapidas" },
-    { id: "produtividade", label: "Produtividade", Icon: TrendingUp, description: "Analise de horas e desempenho" },
     { id: "boletim", label: "Boletim", Icon: Award, description: "Notas e medias por disciplina" },
+    { id: "forum", label: "Forum", Icon: MessageSquare, description: "Forum academico e atividades" },
+    { id: "financeiro", label: "Financeiro", Icon: DollarSign, description: "Mensalidades e pagamentos" },
+    { id: "servicos", label: "Servicos", Icon: Briefcase, description: "Servicos e solicitacoes" },
+    { id: "biblioteca", label: "Biblioteca", Icon: BookOpen, description: "Acervo e materiais digitais" },
     { id: "sobre", label: "Sobre o Projeto", Icon: Info, description: "Documentacao e arquitetura" },
     { id: "perfil", label: "Perfil", Icon: User, description: "Dados pessoais e configuracoes" },
   ];
@@ -2062,6 +1933,32 @@ export default function Dashboard() {
   const [tab, setTab] = useState<Tab>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const markAsRead = (id: number) => {
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+  };
+
+  const markAllAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
+  // Close notification dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
+      }
+    };
+    if (showNotifications) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showNotifications]);
 
   // Ctrl+K shortcut
   useEffect(() => {
@@ -2088,14 +1985,19 @@ export default function Dashboard() {
     }
   }, []);
 
+  const notifTypeColors: Record<Notification["type"], string> = {
+    prazo: "var(--red)",
+    nota: "var(--green)",
+    aviso: "var(--amber)",
+    forum: "var(--accent)",
+  };
+
   const views: Record<Tab, React.ReactNode> = {
-    dashboard: <DashboardView setTab={setTab} />,
+    dashboard: <DashboardView setTab={setTab} notifications={notifications} />,
     horarios: <HorariosView />,
     tarefas: <TarefasView />,
     calendario: <CalendarioView />,
-    pomodoro: <PomodoroView />,
     notas: <NotasView />,
-    produtividade: <ProdutividadeView />,
     boletim: <BoletimView />,
     forum: <ForumView />,
     financeiro: <FinanceiroView />,
@@ -2109,7 +2011,7 @@ export default function Dashboard() {
     <div className="flex min-h-screen noise-bg" style={{ background: "var(--bg-primary)", fontFamily: "var(--font-dm-sans)" }}>
       <Sidebar tab={tab} setTab={setTab} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main className="flex-1 p-4 md:p-8 overflow-auto md:ml-0 w-full">
-        {/* Top bar with hamburger + search */}
+        {/* Top bar with hamburger + search + notifications */}
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -2118,7 +2020,86 @@ export default function Dashboard() {
           >
             <Menu size={20} style={{ color: "var(--text-secondary)" }} />
           </button>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            {/* Notification Bell */}
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={() => setShowNotifications((prev) => !prev)}
+                className="relative flex items-center justify-center w-10 h-10 rounded-xl transition-all hover:scale-[1.02]"
+                style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
+              >
+                <Bell size={18} style={{ color: "var(--text-muted)" }} />
+                {unreadCount > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                    style={{ background: "var(--red)" }}
+                  >
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Notification Dropdown */}
+              {showNotifications && (
+                <div
+                  className="absolute right-0 top-12 w-80 sm:w-96 rounded-2xl overflow-hidden z-50 animate-fade-up"
+                  style={{ background: "var(--bg-card)", border: "1px solid var(--border)", boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
+                >
+                  <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)" }}>
+                    <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Notificacoes</span>
+                    {unreadCount > 0 && (
+                      <span className="text-[11px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--red-soft)", color: "var(--red)" }}>
+                        {unreadCount} novas
+                      </span>
+                    )}
+                  </div>
+                  <div className="max-h-[320px] overflow-y-auto">
+                    {notifications.map((notif) => (
+                      <button
+                        key={notif.id}
+                        onClick={() => markAsRead(notif.id)}
+                        className="w-full flex items-start gap-3 px-4 py-3 text-left transition-all"
+                        style={{
+                          background: notif.read ? "transparent" : "rgba(0,168,157,0.04)",
+                          borderBottom: "1px solid var(--border)",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-primary)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = notif.read ? "transparent" : "rgba(0,168,157,0.04)")}
+                      >
+                        <div
+                          className="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1.5"
+                          style={{ background: notifTypeColors[notif.type], opacity: notif.read ? 0.3 : 1 }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm" style={{ color: notif.read ? "var(--text-muted)" : "var(--text-primary)" }}>
+                            {notif.text}
+                          </p>
+                          <span className="text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>
+                            {notif.time}
+                          </span>
+                        </div>
+                        {!notif.read && (
+                          <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5" style={{ background: "var(--accent)" }} />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={markAllAsRead}
+                      className="w-full px-4 py-3 text-xs font-medium text-center transition-all"
+                      style={{ color: "var(--accent)", borderTop: "1px solid var(--border)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-primary)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      Marcar todas como lidas
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Search button */}
             <button
               onClick={() => setCmdOpen(true)}
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all hover:scale-[1.02]"
