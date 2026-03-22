@@ -222,7 +222,7 @@ function DashboardView({ setTab, notifications }: { setTab: (t: Tab) => void; no
           { Icon: BookOpen, label: "Tarefas Pendentes", value: "4", color: "var(--amber)", bg: "var(--amber-soft)" },
           { Icon: CheckSquare, label: "Concluidas", value: "2", color: "var(--green)", bg: "var(--green-soft)" },
           { Icon: Bell, label: "Notificacoes", value: String(notifications.filter((n) => !n.read).length), color: "var(--red)", bg: "var(--red-soft)" },
-          { Icon: Clock, label: "Horas Estudadas", value: "4.5h", color: "var(--accent)", bg: "var(--accent-soft)" },
+          { Icon: Award, label: "Horas Complementares", value: "45/120h", color: "var(--accent)", bg: "var(--accent-soft)" },
         ].map((s) => (
           <Card key={s.label}>
             <div className="flex items-start justify-between mb-3">
@@ -1000,6 +1000,45 @@ function ServicosView() {
         <Briefcase size={20} style={{ color: "var(--accent)" }} />
         <h1 className="text-2xl font-bold tracking-tight">Servicos</h1>
       </div>
+
+      {/* Horas Complementares */}
+      <Card>
+        <div className="flex items-center gap-2 mb-4">
+          <Award size={16} style={{ color: "var(--accent)" }} />
+          <h2 className="font-semibold text-sm">Horas Complementares</h2>
+        </div>
+
+        {/* Progress bar */}
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>45h concluidas de 120h</span>
+            <span className="text-xs font-semibold" style={{ color: "var(--accent)" }}>37,5%</span>
+          </div>
+          <div className="h-2.5 rounded-full overflow-hidden" style={{ background: "var(--bg-primary)" }}>
+            <div className="h-full rounded-full transition-all" style={{ width: "37.5%", background: "var(--accent)" }} />
+          </div>
+        </div>
+
+        <p className="text-xs mb-5" style={{ color: "var(--text-muted)" }}>Faltam 75h para completar</p>
+
+        {/* Categories */}
+        <div className="space-y-2">
+          {[
+            { label: "Eventos academicos", hours: "20h", color: "var(--green)" },
+            { label: "Cursos online", hours: "15h", color: "var(--accent)" },
+            { label: "Monitoria", hours: "10h", color: "var(--amber)" },
+            { label: "Extensao", hours: "0h", color: "var(--text-muted)" },
+          ].map((cat) => (
+            <div key={cat.label} className="flex items-center justify-between px-3 py-2 rounded-xl" style={{ background: "var(--bg-primary)" }}>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: cat.color }} />
+                <span className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>{cat.label}</span>
+              </div>
+              <span className="text-xs font-semibold" style={{ color: cat.color, fontFamily: "var(--font-jetbrains)" }}>{cat.hours}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       {/* Quick access grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
