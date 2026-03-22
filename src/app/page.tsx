@@ -130,11 +130,11 @@ export default function LandingPage() {
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { role: "Aluno", Icon: GraduationCap },
-                    { role: "Professor", Icon: User },
-                    { role: "Coordenador", Icon: Shield },
+                    { role: "Aluno", Icon: GraduationCap, href: "/dashboard" },
+                    { role: "Professor", Icon: User, href: "/professor" },
+                    { role: "Coordenador", Icon: Shield, href: "/coordenador" },
                   ].map((r) => (
-                    <Link key={r.role} href="/dashboard" className="flex flex-col items-center gap-1 py-2 rounded-lg text-[10px] font-medium transition-all hover:bg-[#f0f4f8]" style={{ border: "1px solid #e2e8f0", color: "#475569" }}>
+                    <Link key={r.role} href={r.href} className="flex flex-col items-center gap-1 py-2 rounded-lg text-[10px] font-medium transition-all hover:bg-[#f0f4f8]" style={{ border: "1px solid #e2e8f0", color: "#475569" }}>
                       <r.Icon size={14} />
                       {r.role}
                     </Link>
