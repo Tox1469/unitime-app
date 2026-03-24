@@ -210,8 +210,8 @@ function DashboardView({ setTab, notifications }: { setTab: (t: Tab) => void; no
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { Icon: BookOpen, label: "Tarefas Pendentes", value: "4", color: "var(--amber)", bg: "var(--amber-soft)" },
-          { Icon: CheckSquare, label: "Concluidas", value: "2", color: "var(--green)", bg: "var(--green-soft)" },
+          { Icon: FileText, label: "Atividades Pendentes", value: String(ATIVIDADES.filter((a) => a.avaliativa && (a.status === "pendente" || a.status === "atrasado")).length), color: "var(--amber)", bg: "var(--amber-soft)" },
+          { Icon: CheckSquare, label: "Corrigidas", value: String(ATIVIDADES.filter((a) => a.status === "corrigido").length), color: "var(--green)", bg: "var(--green-soft)" },
           { Icon: Bell, label: "Notificacoes", value: String(notifications.filter((n) => !n.read).length), color: "var(--red)", bg: "var(--red-soft)" },
           { Icon: Award, label: "Horas Complementares", value: "45/120h", color: "var(--accent)", bg: "var(--accent-soft)" },
         ].map((s) => (
@@ -254,6 +254,38 @@ function DashboardView({ setTab, notifications }: { setTab: (t: Tab) => void; no
           </div>
         </Card>
 
+        {/* Atividades pendentes que valem nota */}
+        <Card>
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <FileText size={16} style={{ color: "var(--amber)" }} />
+              <h2 className="font-semibold text-sm">Entregas Pendentes</h2>
+            </div>
+            <button onClick={() => setTab("atividades")} className="flex items-center gap-1 text-xs transition-colors" style={{ color: "var(--accent)" }}>
+              Ver tudo <ChevronRight size={12} />
+            </button>
+          </div>
+          <div className="space-y-2.5">
+            {ATIVIDADES.filter((a) => a.avaliativa && (a.status === "pendente" || a.status === "atrasado")).map((at) => (
+              <div key={at.id} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: at.status === "atrasado" ? "var(--red)" : "var(--amber)" }} />
+                  <div>
+                    <span className="text-sm" style={{ color: "var(--text-primary)" }}>{at.title}</span>
+                    <span className="text-[11px] block" style={{ color: "var(--text-muted)" }}>{at.subject}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--purple-soft)", color: "var(--purple)" }}>Vale {at.valor?.toFixed(1)}</span>
+                  {at.deadline && <span className="text-[11px] px-2 py-0.5 rounded-lg" style={{ background: "var(--bg-card)", color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{at.deadline}</span>}
+                </div>
+              </div>
+            ))}
+            {ATIVIDADES.filter((a) => a.avaliativa && (a.status === "pendente" || a.status === "atrasado")).length === 0 && (
+              <p className="text-sm text-center py-4" style={{ color: "var(--text-muted)" }}>Nenhuma entrega pendente</p>
+            )}
+          </div>
+        </Card>
       </div>
 
       {/* Recent Notifications */}
@@ -422,8 +454,8 @@ type Atividade = {
   date: string;
   deadline?: string;
   avaliativa: boolean;
+  valor?: number;
   nota?: number | null;
-  notaMax?: number;
   status: "pendente" | "enviado" | "corrigido" | "atrasado";
   submittedFile?: string;
 };
@@ -433,28 +465,28 @@ const ATIVIDADES: Atividade[] = [
     id: 1, subject: "Estrutura de Dados", subjectColor: "var(--accent)", SubjectIcon: Code,
     professor: "Prof.o Joao (Goku)", title: "Lista de Exercicios 3 -- Arvores Binarias",
     description: "Resolver os exercicios 1 a 15 sobre arvores binarias de busca. Entregar em PDF ou codigo fonte comentado.",
-    date: "18/03", deadline: "02/04", avaliativa: true, nota: null, notaMax: 10,
+    date: "18/03", deadline: "02/04", avaliativa: true, valor: 2.0, nota: null,
     status: "pendente",
   },
   {
     id: 2, subject: "Programacao Front-End", subjectColor: "var(--green)", SubjectIcon: Monitor,
     professor: "Prof.a Emil E. Golombieski", title: "Projeto Final -- Landing Page Responsiva",
     description: "Criar uma landing page completa utilizando HTML5, CSS3 e JavaScript. Deve ser responsiva e ter pelo menos 3 secoes.",
-    date: "15/03", deadline: "25/04", avaliativa: true, nota: null, notaMax: 10,
+    date: "15/03", deadline: "25/04", avaliativa: true, valor: 4.0, nota: null,
     status: "pendente",
   },
   {
     id: 3, subject: "Analise e Projeto Orientado a Objetos", subjectColor: "var(--amber)", SubjectIcon: BookOpen,
     professor: "Prof.a Jessyca K. Franquitto", title: "Trabalho -- Diagrama de Classes UML",
     description: "Modelar um sistema usando diagrama de classes UML. Minimo 8 classes com heranca, composicao e interfaces.",
-    date: "12/03", deadline: "08/04", avaliativa: true, nota: 8.5, notaMax: 10,
+    date: "12/03", deadline: "08/04", avaliativa: true, valor: 3.0, nota: 2.5,
     status: "corrigido", submittedFile: "DiagramaUML_UniTime.astah",
   },
   {
     id: 4, subject: "Mentalidade Criativa e Empreendedora", subjectColor: "var(--purple)", SubjectIcon: Lightbulb,
     professor: "Prof.o Danilo", title: "Trabalho -- Prototipo Tecnologico",
     description: "Desenvolver um prototipo funcional de solucao tecnologica para o ambiente universitario. Grupos de ate 4 pessoas.",
-    date: "10/03", deadline: "12/04", avaliativa: true, nota: 9.0, notaMax: 10,
+    date: "10/03", deadline: "12/04", avaliativa: true, valor: 5.0, nota: 4.5,
     status: "corrigido", submittedFile: "UniTime_Prototipo_IgorLuis.pdf",
   },
   {
@@ -467,14 +499,14 @@ const ATIVIDADES: Atividade[] = [
     id: 6, subject: "Analise e Projeto Orientado a Objetos", subjectColor: "var(--amber)", SubjectIcon: BookOpen,
     professor: "Prof.a Jessyca K. Franquitto", title: "Prova 1o Bimestre",
     description: "Conteudo: UML, SOLID, Design Patterns. Prova individual sem consulta.",
-    date: "15/03", avaliativa: true, nota: 8.0, notaMax: 10,
+    date: "15/03", avaliativa: true, valor: 5.0, nota: 4.0,
     status: "corrigido",
   },
   {
     id: 7, subject: "Programacao Front-End", subjectColor: "var(--green)", SubjectIcon: Monitor,
     professor: "Prof.a Emil E. Golombieski", title: "Quiz -- Flexbox e Grid",
     description: "Quiz rapido sobre propriedades de Flexbox e CSS Grid. Feito em aula.",
-    date: "20/03", avaliativa: true, nota: 9.5, notaMax: 10,
+    date: "20/03", avaliativa: true, valor: 0.5, nota: 0.5,
     status: "corrigido",
   },
 ];
@@ -654,14 +686,14 @@ function AtividadesView() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
                       <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: `${sc.color}15`, color: sc.color }}>{sc.label}</span>
-                      {at.avaliativa ? (
-                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--purple-soft)", color: "var(--purple)" }}>Vale nota</span>
-                      ) : (
+                      {at.avaliativa && at.valor != null ? (
+                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--purple-soft)", color: "var(--purple)" }}>Vale {at.valor.toFixed(1)}</span>
+                      ) : !at.avaliativa ? (
                         <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--bg-primary)", color: "var(--text-muted)" }}>Sem nota</span>
-                      )}
-                      {at.nota != null && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-bold" style={{ background: at.nota >= 6 ? "var(--green-soft)" : "var(--red-soft)", color: at.nota >= 6 ? "var(--green)" : "var(--red)" }}>
-                          {at.nota.toFixed(1)}{at.notaMax ? `/${at.notaMax}` : ""}
+                      ) : null}
+                      {at.nota != null && at.valor != null && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-bold" style={{ background: at.nota >= at.valor * 0.6 ? "var(--green-soft)" : "var(--red-soft)", color: at.nota >= at.valor * 0.6 ? "var(--green)" : "var(--red)" }}>
+                          {at.nota.toFixed(1)}/{at.valor.toFixed(1)}
                         </span>
                       )}
                     </div>
@@ -699,11 +731,11 @@ function AtividadesView() {
                         <div className="text-xs font-semibold" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains)" }}>{at.deadline}</div>
                       </div>
                     )}
-                    {at.avaliativa && (
+                    {at.avaliativa && at.valor != null && (
                       <div className="p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
                         <div className="text-[10px] font-medium mb-1" style={{ color: "var(--text-muted)" }}>Nota</div>
-                        <div className="text-xs font-bold" style={{ color: at.nota != null ? (at.nota >= 6 ? "var(--green)" : "var(--red)") : "var(--text-muted)" }}>
-                          {at.nota != null ? `${at.nota.toFixed(1)} / ${at.notaMax}` : "Aguardando"}
+                        <div className="text-xs font-bold" style={{ color: at.nota != null ? (at.nota >= at.valor * 0.6 ? "var(--green)" : "var(--red)") : "var(--text-muted)" }}>
+                          {at.nota != null ? `${at.nota.toFixed(1)} / ${at.valor.toFixed(1)}` : `Aguardando (vale ${at.valor.toFixed(1)})`}
                         </div>
                       </div>
                     )}
