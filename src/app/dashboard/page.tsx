@@ -422,7 +422,6 @@ type Atividade = {
   date: string;
   deadline?: string;
   avaliativa: boolean;
-  peso?: string;
   nota?: number | null;
   notaMax?: number;
   status: "pendente" | "enviado" | "corrigido" | "atrasado";
@@ -434,28 +433,28 @@ const ATIVIDADES: Atividade[] = [
     id: 1, subject: "Estrutura de Dados", subjectColor: "var(--accent)", SubjectIcon: Code,
     professor: "Prof.o Joao (Goku)", title: "Lista de Exercicios 3 -- Arvores Binarias",
     description: "Resolver os exercicios 1 a 15 sobre arvores binarias de busca. Entregar em PDF ou codigo fonte comentado.",
-    date: "18/03", deadline: "02/04", avaliativa: true, peso: "2.0", nota: null, notaMax: 10,
+    date: "18/03", deadline: "02/04", avaliativa: true, nota: null, notaMax: 10,
     status: "pendente",
   },
   {
     id: 2, subject: "Programacao Front-End", subjectColor: "var(--green)", SubjectIcon: Monitor,
     professor: "Prof.a Emil E. Golombieski", title: "Projeto Final -- Landing Page Responsiva",
     description: "Criar uma landing page completa utilizando HTML5, CSS3 e JavaScript. Deve ser responsiva e ter pelo menos 3 secoes.",
-    date: "15/03", deadline: "25/04", avaliativa: true, peso: "4.0", nota: null, notaMax: 10,
+    date: "15/03", deadline: "25/04", avaliativa: true, nota: null, notaMax: 10,
     status: "pendente",
   },
   {
     id: 3, subject: "Analise e Projeto Orientado a Objetos", subjectColor: "var(--amber)", SubjectIcon: BookOpen,
     professor: "Prof.a Jessyca K. Franquitto", title: "Trabalho -- Diagrama de Classes UML",
     description: "Modelar um sistema usando diagrama de classes UML. Minimo 8 classes com heranca, composicao e interfaces.",
-    date: "12/03", deadline: "08/04", avaliativa: true, peso: "3.0", nota: 8.5, notaMax: 10,
+    date: "12/03", deadline: "08/04", avaliativa: true, nota: 8.5, notaMax: 10,
     status: "corrigido", submittedFile: "DiagramaUML_UniTime.astah",
   },
   {
     id: 4, subject: "Mentalidade Criativa e Empreendedora", subjectColor: "var(--purple)", SubjectIcon: Lightbulb,
     professor: "Prof.o Danilo", title: "Trabalho -- Prototipo Tecnologico",
     description: "Desenvolver um prototipo funcional de solucao tecnologica para o ambiente universitario. Grupos de ate 4 pessoas.",
-    date: "10/03", deadline: "12/04", avaliativa: true, peso: "5.0", nota: 9.0, notaMax: 10,
+    date: "10/03", deadline: "12/04", avaliativa: true, nota: 9.0, notaMax: 10,
     status: "corrigido", submittedFile: "UniTime_Prototipo_IgorLuis.pdf",
   },
   {
@@ -468,14 +467,14 @@ const ATIVIDADES: Atividade[] = [
     id: 6, subject: "Analise e Projeto Orientado a Objetos", subjectColor: "var(--amber)", SubjectIcon: BookOpen,
     professor: "Prof.a Jessyca K. Franquitto", title: "Prova 1o Bimestre",
     description: "Conteudo: UML, SOLID, Design Patterns. Prova individual sem consulta.",
-    date: "15/03", avaliativa: true, peso: "5.0", nota: 8.0, notaMax: 10,
+    date: "15/03", avaliativa: true, nota: 8.0, notaMax: 10,
     status: "corrigido",
   },
   {
     id: 7, subject: "Programacao Front-End", subjectColor: "var(--green)", SubjectIcon: Monitor,
     professor: "Prof.a Emil E. Golombieski", title: "Quiz -- Flexbox e Grid",
     description: "Quiz rapido sobre propriedades de Flexbox e CSS Grid. Feito em aula.",
-    date: "20/03", avaliativa: true, peso: "1.0", nota: 9.5, notaMax: 10,
+    date: "20/03", avaliativa: true, nota: 9.5, notaMax: 10,
     status: "corrigido",
   },
 ];
@@ -562,6 +561,7 @@ function AtividadesView() {
   const [uploadingId, setUploadingId] = useState<number | null>(null);
   const [filter, setFilter] = useState<"todas" | "pendente" | "enviado" | "corrigido">("todas");
   const [subjectFilter, setSubjectFilter] = useState<string | null>(null);
+  const [notaFilter, setNotaFilter] = useState<"todas" | "vale" | "sem">("todas");
 
   const handleSubmit = (id: number) => {
     setAtividades((prev) => prev.map((a) => a.id === id ? { ...a, status: "enviado" as const, submittedFile: "Trabalho_Igor_Luis.pdf" } : a));
@@ -571,6 +571,8 @@ function AtividadesView() {
   const filtered = atividades.filter((a) => {
     if (filter !== "todas" && a.status !== filter) return false;
     if (subjectFilter && a.subject !== subjectFilter) return false;
+    if (notaFilter === "vale" && !a.avaliativa) return false;
+    if (notaFilter === "sem" && a.avaliativa) return false;
     return true;
   });
 
@@ -614,6 +616,15 @@ function AtividadesView() {
               {f === "todas" ? "Todas" : statusConfig[f].label}
             </button>
           ))}
+          <div className="w-px h-6 self-center" style={{ background: "var(--border)" }} />
+          {(["todas", "vale", "sem"] as const).map((f) => {
+            const labels = { todas: "Todas", vale: "Vale nota", sem: "Sem nota" };
+            return (
+              <button key={f} onClick={() => setNotaFilter(f)} className="px-4 py-2 rounded-xl text-xs font-medium transition-all" style={{ background: notaFilter === f ? "var(--purple)" : "var(--bg-card)", color: notaFilter === f ? "white" : "var(--text-secondary)", border: `1px solid ${notaFilter === f ? "transparent" : "var(--border)"}` }}>
+                {labels[f]}
+              </button>
+            );
+          })}
         </div>
         <div className="flex gap-2 flex-wrap">
           <button onClick={() => setSubjectFilter(null)} className="px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all" style={{ background: !subjectFilter ? "var(--accent-soft)" : "transparent", color: !subjectFilter ? "var(--accent)" : "var(--text-muted)", border: "1px solid var(--border)" }}>
@@ -644,9 +655,9 @@ function AtividadesView() {
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
                       <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: `${sc.color}15`, color: sc.color }}>{sc.label}</span>
                       {at.avaliativa ? (
-                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--purple-soft)", color: "var(--purple)" }}>Avaliativa{at.peso ? ` . Peso ${at.peso}` : ""}</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--purple-soft)", color: "var(--purple)" }}>Vale nota</span>
                       ) : (
-                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--bg-primary)", color: "var(--text-muted)" }}>Nao avaliativa</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-lg font-medium" style={{ background: "var(--bg-primary)", color: "var(--text-muted)" }}>Sem nota</span>
                       )}
                       {at.nota != null && (
                         <span className="text-[10px] px-2 py-0.5 rounded-lg font-bold" style={{ background: at.nota >= 6 ? "var(--green-soft)" : "var(--red-soft)", color: at.nota >= 6 ? "var(--green)" : "var(--red)" }}>
