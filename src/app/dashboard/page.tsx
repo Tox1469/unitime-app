@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Clock, CheckSquare, Calendar, BarChart3, StickyNote, TrendingUp,
-  LayoutDashboard, Plus, Trash2, ChevronRight,
+  LayoutDashboard, Plus, ChevronRight,
   BookOpen, Laptop, Globe, Calculator, Code, Award, Coffee,
   Sun, Moon, X, Info, Server, Database, Users, Rocket, DollarSign, Shield,
   Layers, ArrowRight, GitBranch, Cpu, Cloud, Smartphone, GraduationCap,
@@ -15,9 +15,8 @@ import {
 } from "lucide-react";
 
 // ============ TYPES ============
-type Task = { id: number; text: string; done: boolean; priority: "alta" | "media" | "baixa"; date: string };
 type Note = { id: number; text: string; date: string };
-type Tab = "dashboard" | "horarios" | "tarefas" | "calendario" | "boletim" | "forum" | "financeiro" | "servicos" | "biblioteca" | "sobre" | "perfil";
+type Tab = "dashboard" | "horarios" | "calendario" | "boletim" | "forum" | "financeiro" | "servicos" | "biblioteca" | "sobre" | "perfil";
 
 type Notification = {
   id: number;
@@ -53,14 +52,6 @@ const CALENDAR_EVENTS = [
   { day: 25, title: "Entrega Projeto Front-End", color: "var(--green)" },
 ];
 
-const INITIAL_TASKS: Task[] = [
-  { id: 1, text: "Estudar para prova de Estrutura de Dados", done: false, priority: "alta", date: "03/04" },
-  { id: 2, text: "Finalizar trabalho de APOO", done: false, priority: "alta", date: "08/04" },
-  { id: 3, text: "Preparar seminário de Mentalidade Criativa", done: true, priority: "media", date: "12/04" },
-  { id: 4, text: "Revisar matéria de Programação Front-End", done: false, priority: "media", date: "18/04" },
-  { id: 5, text: "Fazer exercícios de HTML/CSS/JS", done: true, priority: "baixa", date: "10/04" },
-  { id: 6, text: "Projeto final de Front-End", done: false, priority: "alta", date: "25/04" },
-];
 
 const INITIAL_NOTES: Note[] = [
   { id: 1, text: "Lembrar de pegar o livro na biblioteca", date: "18/03" },
@@ -84,7 +75,6 @@ function Sidebar({ tab, setTab, open, onClose }: { tab: Tab; setTab: (t: Tab) =>
       items: [
         { id: "dashboard", Icon: LayoutDashboard, label: "Dashboard" },
         { id: "horarios", Icon: Calendar, label: "Horarios" },
-        { id: "tarefas", Icon: CheckSquare, label: "Tarefas" },
         { id: "calendario", Icon: Calendar, label: "Calendario" },
       ],
     },
@@ -263,32 +253,6 @@ function DashboardView({ setTab, notifications }: { setTab: (t: Tab) => void; no
           </div>
         </Card>
 
-        {/* Tasks */}
-        <Card>
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2">
-              <CheckSquare size={16} style={{ color: "var(--green)" }} />
-              <h2 className="font-semibold text-sm">Próximas Tarefas</h2>
-            </div>
-            <button onClick={() => setTab("tarefas")} className="flex items-center gap-1 text-xs transition-colors" style={{ color: "var(--accent)" }}>
-              Ver tudo <ChevronRight size={12} />
-            </button>
-          </div>
-          <div className="space-y-2.5">
-            {INITIAL_TASKS.filter((t) => !t.done).slice(0, 4).map((task) => {
-              const pc = task.priority === "alta" ? "var(--red)" : task.priority === "media" ? "var(--amber)" : "var(--green)";
-              return (
-                <div key={task.id} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: pc }} />
-                    <span className="text-sm" style={{ color: "var(--text-primary)" }}>{task.text}</span>
-                  </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded-lg flex-shrink-0" style={{ background: "var(--bg-card)", color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{task.date}</span>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
       </div>
 
       {/* Recent Notifications */}
@@ -349,66 +313,6 @@ function HorariosView() {
   );
 }
 
-function TarefasView() {
-  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
-  const [newTask, setNewTask] = useState("");
-
-  const toggleTask = (id: number) => setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
-  const addTask = () => {
-    if (!newTask.trim()) return;
-    setTasks((prev) => [...prev, { id: Date.now(), text: newTask, done: false, priority: "media", date: new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }) }]);
-    setNewTask("");
-  };
-  const deleteTask = (id: number) => setTasks((prev) => prev.filter((t) => t.id !== id));
-  const pc = (p: string) => p === "alta" ? "var(--red)" : p === "media" ? "var(--amber)" : "var(--green)";
-  const pl = (p: string) => p === "alta" ? "Alta" : p === "media" ? "Média" : "Baixa";
-
-  return (
-    <div className="animate-fade-up space-y-6">
-      <div className="flex items-center gap-2">
-        <CheckSquare size={20} style={{ color: "var(--green)" }} />
-        <h1 className="text-2xl font-bold tracking-tight">Lista de Tarefas</h1>
-      </div>
-
-      <div className="flex gap-3">
-        <input value={newTask} onChange={(e) => setNewTask(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addTask()} placeholder="Adicionar nova tarefa..."
-          className="flex-1 px-4 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-1" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-primary)", "--tw-ring-color": "var(--accent)" } as React.CSSProperties} />
-        <button onClick={addTask} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-medium transition-all hover:opacity-90" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>
-          <Plus size={16} /> Adicionar
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {[
-          { label: "Todas", count: tasks.length, color: "var(--accent)", bg: "var(--accent-soft)" },
-          { label: "Pendentes", count: tasks.filter((t) => !t.done).length, color: "var(--amber)", bg: "var(--amber-soft)" },
-          { label: "Concluídas", count: tasks.filter((t) => t.done).length, color: "var(--green)", bg: "var(--green-soft)" },
-        ].map((f) => (
-          <Card key={f.label}>
-            <div className="text-2xl font-bold" style={{ color: f.color }}>{f.count}</div>
-            <div className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{f.label}</div>
-          </Card>
-        ))}
-      </div>
-
-      <div className="space-y-2">
-        {tasks.map((task) => (
-          <div key={task.id} className="flex items-center gap-3 p-4 rounded-xl transition-all group" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", opacity: task.done ? 0.5 : 1 }}>
-            <button onClick={() => toggleTask(task.id)} className="w-5 h-5 rounded-lg flex items-center justify-center flex-shrink-0 transition-all" style={{ border: `2px solid ${task.done ? "var(--accent)" : "var(--border)"}`, background: task.done ? "var(--accent)" : "transparent" }}>
-              {task.done && <span className="text-white text-[10px] font-bold">✓</span>}
-            </button>
-            <span className={`flex-1 text-sm ${task.done ? "line-through" : ""}`} style={{ color: task.done ? "var(--text-muted)" : "var(--text-primary)" }}>{task.text}</span>
-            <span className="text-[10px] font-medium px-2.5 py-1 rounded-lg" style={{ background: `${pc(task.priority)}12`, color: pc(task.priority) }}>{pl(task.priority)}</span>
-            <span className="text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains)" }}>{task.date}</span>
-            <button onClick={() => deleteTask(task.id)} className="opacity-0 group-hover:opacity-100 p-1 rounded-lg transition-all hover:bg-red-500/10">
-              <Trash2 size={14} style={{ color: "var(--red)" }} />
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function CalendarioView() {
   const daysInMonth = 30;
@@ -1867,7 +1771,6 @@ function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () 
   const tabs: { id: Tab; label: string; Icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; description: string }[] = [
     { id: "dashboard", label: "Dashboard", Icon: LayoutDashboard, description: "Visao geral e resumo" },
     { id: "horarios", label: "Horarios", Icon: Calendar, description: "Grade de aulas semanal" },
-    { id: "tarefas", label: "Tarefas", Icon: CheckSquare, description: "Lista de tarefas e pendencias" },
     { id: "calendario", label: "Calendario", Icon: Calendar, description: "Eventos e datas importantes" },
     { id: "boletim", label: "Boletim", Icon: Award, description: "Notas e medias por disciplina" },
     { id: "forum", label: "Forum", Icon: MessageSquare, description: "Forum academico e atividades" },
@@ -1877,10 +1780,6 @@ function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () 
     { id: "sobre", label: "Sobre o Projeto", Icon: Info, description: "Documentacao e arquitetura" },
     { id: "perfil", label: "Perfil", Icon: User, description: "Dados pessoais e configuracoes" },
   ];
-
-  const taskResults = INITIAL_TASKS.filter((t) =>
-    query.length > 0 && t.text.toLowerCase().includes(query.toLowerCase())
-  );
 
   const noteResults = INITIAL_NOTES.filter((n) =>
     query.length > 0 && n.text.toLowerCase().includes(query.toLowerCase())
@@ -1911,7 +1810,7 @@ function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () 
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar paginas, tarefas, notas..."
+            placeholder="Buscar paginas, notas..."
             className="flex-1 bg-transparent text-sm outline-none"
             style={{ color: "var(--text-primary)" }}
             onKeyDown={(e) => {
@@ -1949,30 +1848,6 @@ function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () 
             </div>
           )}
 
-          {taskResults.length > 0 && (
-            <div className="mb-2">
-              <p className="text-[10px] font-bold uppercase tracking-widest px-3 py-2" style={{ color: "var(--text-muted)" }}>Tarefas</p>
-              {taskResults.map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => handleSelect("tarefas")}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all"
-                  style={{ color: "var(--text-primary)" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-primary)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                >
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--green-soft)" }}>
-                    <CheckSquare size={16} style={{ color: "var(--green)" }} />
-                  </div>
-                  <div>
-                    <div className="font-medium">{t.text}</div>
-                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Tarefa · {t.date}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-
           {noteResults.length > 0 && (
             <div className="mb-2">
               <p className="text-[10px] font-bold uppercase tracking-widest px-3 py-2" style={{ color: "var(--text-muted)" }}>Notas</p>
@@ -1997,7 +1872,7 @@ function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () 
             </div>
           )}
 
-          {query.length > 0 && filteredTabs.length === 0 && taskResults.length === 0 && noteResults.length === 0 && (
+          {query.length > 0 && filteredTabs.length === 0 && noteResults.length === 0 && (
             <div className="text-center py-8">
               <Search size={32} className="mx-auto mb-3" style={{ color: "var(--text-muted)", opacity: 0.4 }} />
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>Nenhum resultado para &quot;{query}&quot;</p>
@@ -2076,7 +1951,6 @@ export default function Dashboard() {
   const views: Record<Tab, React.ReactNode> = {
     dashboard: <DashboardView setTab={setTab} notifications={notifications} />,
     horarios: <HorariosView />,
-    tarefas: <TarefasView />,
     calendario: <CalendarioView />,
     boletim: <BoletimView />,
     forum: <ForumView />,
