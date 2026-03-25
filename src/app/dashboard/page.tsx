@@ -883,6 +883,7 @@ function ForumView() {
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addComment(thread.id)}
+            aria-label="Escreva um comentario"
             placeholder="Escreva um comentario..."
             className="flex-1 px-4 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-1"
             style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-primary)", "--tw-ring-color": "var(--accent)" } as React.CSSProperties}
@@ -2042,6 +2043,7 @@ function CommandPalette({ open, onClose, setTab }: { open: boolean; onClose: () 
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            aria-label="Buscar paginas e notas"
             placeholder="Buscar paginas, notas..."
             className="flex-1 bg-transparent text-sm outline-none"
             style={{ color: "var(--text-primary)" }}
@@ -2197,7 +2199,7 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen noise-bg" style={{ background: "var(--bg-primary)", fontFamily: "var(--font-dm-sans)" }}>
       <Sidebar tab={tab} setTab={setTab} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <main className="flex-1 p-4 md:p-8 overflow-auto md:ml-0 w-full">
+      <main id="main-content" className="flex-1 p-4 md:p-8 overflow-auto md:ml-0 w-full">
         {/* Top bar with hamburger + search + notifications */}
         <div className="flex items-center justify-between mb-4">
           <button

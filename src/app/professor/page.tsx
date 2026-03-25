@@ -508,7 +508,7 @@ export default function ProfessorDashboard() {
   return (
     <div className="flex min-h-screen noise-bg" style={{ background: "var(--bg-primary)", fontFamily: "var(--font-dm-sans)" }}>
       <Sidebar tab={tab} setTab={setTab} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <main className="flex-1 p-4 md:p-8 overflow-auto md:ml-0 w-full">
+      <main id="main-content" className="flex-1 p-4 md:p-8 overflow-auto md:ml-0 w-full">
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => setSidebarOpen(true)}
