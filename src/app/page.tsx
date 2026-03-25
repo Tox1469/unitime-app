@@ -54,7 +54,7 @@ export default function LandingPage() {
               </p>
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white btn-primary"
                 style={{ background: "#00a89d", border: "2px solid rgba(255,255,255,0.2)" }}
               >
                 Acesse a plataforma
@@ -107,7 +107,7 @@ export default function LandingPage() {
                   </div>
                   <Link
                     href="/dashboard"
-                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-white font-semibold text-sm transition-all hover:opacity-90"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-white font-semibold text-sm btn-primary"
                     style={{ background: "#00a89d" }}
                   >
                     Entrar

@@ -208,7 +208,7 @@ function DashboardView({ setTab, notifications }: { setTab: (t: Tab) => void; no
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger">
         {[
           { Icon: FileText, label: "Atividades Pendentes", value: String(ATIVIDADES.filter((a) => a.avaliativa && (a.status === "pendente" || a.status === "atrasado")).length), color: "var(--amber)", bg: "var(--amber-soft)" },
           { Icon: CheckSquare, label: "Corrigidas", value: String(ATIVIDADES.filter((a) => a.status === "corrigido").length), color: "var(--green)", bg: "var(--green-soft)" },
@@ -217,10 +217,10 @@ function DashboardView({ setTab, notifications }: { setTab: (t: Tab) => void; no
         ].map((s) => (
           <Card key={s.label}>
             <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: s.bg }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center icon-hover" style={{ background: s.bg }}>
                 <s.Icon size={18} style={{ color: s.color }} />
               </div>
-              <span className="text-2xl font-bold tracking-tight" style={{ color: s.color }}>{s.value}</span>
+              <span className="text-2xl font-bold tracking-tight stat-value" style={{ color: s.color }}>{s.value}</span>
             </div>
             <div className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{s.label}</div>
           </Card>
@@ -239,7 +239,7 @@ function DashboardView({ setTab, notifications }: { setTab: (t: Tab) => void; no
               Ver tudo <ChevronRight size={12} />
             </button>
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-2.5 stagger">
             {(SCHEDULE[Math.min(Math.max(today.getDay() - 1, 0), 4)]?.items?.length ? SCHEDULE[Math.min(Math.max(today.getDay() - 1, 0), 4)].items : SCHEDULE[1].items).map((item, i) => (
               <div key={i} className="flex items-center gap-3 p-3 rounded-xl transition-colors" style={{ background: "var(--bg-primary)" }}>
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${item.color}12` }}>
@@ -265,7 +265,7 @@ function DashboardView({ setTab, notifications }: { setTab: (t: Tab) => void; no
               Ver tudo <ChevronRight size={12} />
             </button>
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-2.5 stagger">
             {ATIVIDADES.filter((a) => a.avaliativa && (a.status === "pendente" || a.status === "atrasado")).map((at) => (
               <div key={at.id} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--bg-primary)" }}>
                 <div className="flex items-center gap-3">
@@ -296,7 +296,7 @@ function DashboardView({ setTab, notifications }: { setTab: (t: Tab) => void; no
             <h2 className="font-semibold text-sm">Notificacoes Recentes</h2>
           </div>
         </div>
-        <div className="space-y-2.5">
+        <div className="space-y-2.5 stagger">
           {notifications.filter((n) => !n.read).slice(0, 3).map((notif) => {
             const typeColors: Record<Notification["type"], string> = { prazo: "var(--red)", nota: "var(--green)", aviso: "var(--amber)", forum: "var(--accent)" };
             const nc = typeColors[notif.type];
@@ -324,7 +324,7 @@ function HorariosView() {
         <Calendar size={20} style={{ color: "var(--accent)" }} />
         <h1 className="text-2xl font-bold tracking-tight">Gerenciador de Horários</h1>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 stagger">
         {SCHEDULE.map((day) => (
           <div key={day.day} className="rounded-2xl overflow-hidden" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
             <div className="px-4 py-3 text-center text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg, var(--accent), #00c4b8)" }}>{day.day}</div>

@@ -158,7 +158,7 @@ function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger">
         {[
           { Icon: Users, label: "Turmas", value: "4", color: "var(--accent)", bg: "var(--accent-soft)" },
           { Icon: Users, label: "Alunos", value: "120", color: "var(--green)", bg: "var(--green-soft)" },

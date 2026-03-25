@@ -142,7 +142,7 @@ function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger">
         {[
           { Icon: BookOpen, label: "Curso (ADS)", value: "1", color: "var(--accent)", bg: "var(--accent-soft)" },
           { Icon: Users, label: "Professores", value: "8", color: "var(--purple)", bg: "var(--purple-soft)" },
